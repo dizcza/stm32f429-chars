@@ -61,7 +61,7 @@
 #define     LCD_SCROLL_ENABLED      1 
 
 /* Define the Fonts  */
-#define     LCD_LOG_HEADER_FONT                   Font16
+#define     LCD_LOG_HEADER_FONT                   Font12
 #define     LCD_LOG_FOOTER_FONT                   Font12
 #define     LCD_LOG_TEXT_FONT                     Font12
             

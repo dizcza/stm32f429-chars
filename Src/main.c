@@ -67,7 +67,9 @@
 #include "stm32f429i_discovery_ts.h"
 #include "stm32f429i_discovery_io.h"
 #include "stm32f429i_discovery_lcd.h"
-
+#include "dtw.h"
+#include "TouchScreen/ts_capture.h"
+//#include "char_patterns.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -88,6 +90,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+static uint16_t m_touches[PATTERN_LENGTH][2];  // processed touches
 
 /* USER CODE END PV */
 
@@ -100,6 +103,15 @@ void MX_FREERTOS_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void Chars_DrawPatterns() {
+	int32_t pattern_id;
+	for (pattern_id = 1; pattern_id < 30; pattern_id++) {
+//		const uint16_t** curr = (const uint16_t**) PATTERN_COORDS[pattern_id];
+//		const uint16_t** prev =
+//				(const uint16_t**) PATTERN_COORDS[pattern_id - 1];
+//		BSP_LCD_DrawLine((uint16_t) prev[1], (uint16_t) prev[0], (uint16_t) curr[1], (uint16_t) curr[0]);
+	}
+}
 
 /* USER CODE END 0 */
 
@@ -140,6 +152,43 @@ int main(void)
   MX_TIM1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+
+  /*##-1- Initialize the LCD #################################################*/
+  /* Initialize the LCD */
+  BSP_LCD_Init();
+
+  /* Initialize the LCD Layers and Touch Screen */
+  BSP_LCD_LayerDefaultInit(1, LCD_FRAME_BUFFER);
+  BSP_LCD_SelectLayer(1);
+  BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
+
+  BSP_LCD_Clear(LCD_COLOR_BLACK);
+  BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
+  BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
+
+  TS_StateTypeDef ts_state;
+  uint32_t tick, last_touch = 0;
+  uint8_t message[20];
+
+  while (1) {
+	  BSP_TS_GetState(&ts_state);
+	  tick = HAL_GetTick();
+	  if (ts_state.TouchDetected) {
+		  TS_SaveTouch(&ts_state);
+		  TS_DrawLastStroke();
+		  last_touch = tick;
+	  } else if (tick - last_touch > 300) {
+		  if (!TS_IsEmpty()) {
+			  int32_t written = TS_Dump(m_touches, PATTERN_LENGTH);
+			  uint8_t predicted = DTW_ClassifyChar(m_touches, written);
+			  BSP_LCD_Clear(LCD_COLOR_BLACK);
+			  TS_Reset();
+			  sprintf((char*) message, "You wrote: %c", (char) predicted);
+			  BSP_LCD_DisplayStringAtLine(0, message);
+		  }
+	  }
+  }
+
 
   /* USER CODE END 2 */
 
