@@ -184,22 +184,24 @@ int main(void)
   BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
   BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
 
-  DrawPatterns();
+//  DrawPatterns();
 
   TS_StateTypeDef ts_state;
   uint32_t tick, last_touch = 0;
   uint8_t message[20];
   DTW_Pattern pattern = {m_touches_x, m_touches_y, PATTERN_SIZE};
+  sprintf((char*) message, "Draw a pattern");
+  BSP_LCD_DisplayStringAtLine(0, message);
 
   while (1) {
 	  BSP_TS_GetState(&ts_state);
+	  TS_SaveTouch(&ts_state);
 	  tick = HAL_GetTick();
 	  if (ts_state.TouchDetected) {
-		  TS_SaveTouch(&ts_state);
 		  TS_DrawLastStroke();
 		  last_touch = tick;
-	  } else if (tick - last_touch > 300) {
-		  if (!TS_IsEmpty()) {
+	  } else if (tick - last_touch > 1000 || TS_GetCacheState() == FULL) {
+		  if (TS_GetCacheState() == DIRTY) {
 			  TS_Dump(&pattern);
 			  uint8_t predicted = DTW_ClassifyChar(&pattern);
 			  BSP_LCD_Clear(LCD_COLOR_BLACK);

@@ -10,14 +10,23 @@
 #include "char_patterns.h"
 
 /* Raw touches */
-static uint16_t m_touches_x[TS_CAPTURE_BUFFER_SIZE];
-static uint16_t m_touches_y[TS_CAPTURE_BUFFER_SIZE];
-static int32_t m_touch_id = -1;
+static uint16_t m_touches_x[TS_CAPTURE_CACHE_SIZE];
+static uint16_t m_touches_y[TS_CAPTURE_CACHE_SIZE];
+static int32_t m_finished = -1, m_touch_id = -1;
+static uint32_t m_last_touch_tick = 0;
 
 int8_t TS_SaveTouch(const TS_StateTypeDef *TsState) {
-	if (!TsState->TouchDetected || m_touch_id >= TS_CAPTURE_BUFFER_SIZE) {
-		return 1;
+	if (m_touch_id == TS_CAPTURE_CACHE_SIZE - 1) {
+		return 1;  // full cache
 	}
+	uint32_t tick = HAL_GetTick();
+	if (!TsState->TouchDetected) {
+		if (tick - m_last_touch_tick > TS_CAPTURE_NO_TOUCH_TICK) {
+			m_finished = m_touch_id;
+		}
+		return -1;
+	}
+	m_last_touch_tick = tick;
 	m_touch_id++;
 	m_touches_x[m_touch_id] = TsState->X;
 	m_touches_y[m_touch_id] = TsState->Y;
@@ -30,7 +39,8 @@ void DrawStroke(int32_t touch_id) {
 }
 
 void TS_DrawLastStroke() {
-	if (m_touch_id > 0) {
+	if (m_touch_id > 0 && m_touch_id != m_finished + 1) {
+		// avoid connecting two subsequent strokes
 		DrawStroke(m_touch_id);
 	}
 }
@@ -68,8 +78,17 @@ void TS_Dump(DTW_Pattern* pattern) {
 	}
 }
 
-int8_t TS_IsEmpty() {
-	return m_touch_id == -1;
+TS_CacheState TS_GetCacheState() {
+	switch (m_touch_id) {
+	case -1:
+		return EMPTY;
+
+	case TS_CAPTURE_CACHE_SIZE - 1:
+		return FULL;
+
+	default:
+		return DIRTY;
+	}
 }
 
 void TS_Reset() {
