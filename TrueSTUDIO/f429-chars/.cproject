@@ -125,7 +125,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="DTW/char_patterns.c|Utilities" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="DTW/c2.c|DTW/c1.c|Utilities" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Utilities"/>
 					</sourceEntries>
 				</configuration>
@@ -258,7 +258,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="DTW/char_patterns.c|Utilities" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="DTW/c2.c|DTW/c1.c|Utilities" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Utilities"/>
 					</sourceEntries>
 				</configuration>
