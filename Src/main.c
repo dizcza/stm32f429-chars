@@ -251,9 +251,9 @@ int main(void)
 	  if (ts_state.TouchDetected) {
 		  TS_Capture_DrawLastStroke();
 		  last_touch = tick;
-	  } else if (tick - last_touch > 1000 || TS_Capture_GetCacheState() == FULL) {
-		  if (TS_Capture_GetCacheState() == DIRTY) {
-			  uint32_t n_touches = TS_Capture_GetNumOfTouches();
+	  } else if (tick - last_touch > 1000) {
+		  uint32_t n_touches = TS_Capture_GetNumOfTouches();
+		  if (n_touches > 2) {
 			  DTW_Preprocess(TS_Capture_TouchesX, TS_Capture_TouchesY, n_touches, &sample);
 			  DTW_ClassifyChar(&sample, &predicted);
 			  BSP_LCD_Clear(LCD_COLOR_BLACK);

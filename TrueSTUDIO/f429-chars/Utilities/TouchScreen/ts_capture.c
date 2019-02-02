@@ -11,12 +11,11 @@
 static int32_t m_finished = -1, m_touch_id = -1;
 static uint32_t m_last_touch_tick = 0;
 
-
 static void DrawStroke(int32_t touch_id) {
-	BSP_LCD_DrawLine(TS_Capture_TouchesX[touch_id - 1], TS_Capture_TouchesY[touch_id - 1],
-			TS_Capture_TouchesX[touch_id], TS_Capture_TouchesY[touch_id]);
+	BSP_LCD_DrawLine(TS_Capture_TouchesX[touch_id - 1],
+			TS_Capture_TouchesY[touch_id - 1], TS_Capture_TouchesX[touch_id],
+			TS_Capture_TouchesY[touch_id]);
 }
-
 
 int8_t TS_Capture_SaveTouch(const TS_StateTypeDef *TsState) {
 	if (m_touch_id == TS_CAPTURE_CACHE_SIZE - 1) {
@@ -52,19 +51,6 @@ void TS_Capture_DrawAllStrokes() {
 
 uint32_t TS_Capture_GetNumOfTouches() {
 	return (uint32_t) (m_touch_id + 1);
-}
-
-TS_Capture_CacheState TS_Capture_GetCacheState() {
-	switch (m_touch_id) {
-	case -1:
-		return EMPTY;
-
-	case TS_CAPTURE_CACHE_SIZE - 1:
-		return FULL;
-
-	default:
-		return DIRTY;
-	}
 }
 
 void TS_Capture_Reset() {
