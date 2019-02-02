@@ -93,8 +93,8 @@
 /* USER CODE BEGIN PV */
 
 /* Processed touches */
-static uint16_t m_touches_x[PATTERN_SIZE];
-static uint16_t m_touches_y[PATTERN_SIZE];
+static float32_t m_touches_x[PATTERN_SIZE];
+static float32_t m_touches_y[PATTERN_SIZE];
 
 /* USER CODE END PV */
 
@@ -110,6 +110,8 @@ void MX_FREERTOS_Init(void);
 void DrawPatterns() {
 	int32_t pattern_id, i;
 	uint8_t message[40];
+	uint16_t lcd_w = BSP_LCD_GetXSize();
+	uint16_t lcd_h = BSP_LCD_GetYSize();
 	for (pattern_id = 0; pattern_id < ALPHABET_SIZE; pattern_id++) {
 		BSP_LCD_Clear(LCD_COLOR_BLACK);
 		BSP_LCD_SetFont(&Font8);
@@ -118,11 +120,16 @@ void DrawPatterns() {
 		BSP_LCD_SetFont(&Font16);
 	    sprintf((char*) message, "Pattern: %c", (char) ALPHABET[pattern_id]);
 		BSP_LCD_DisplayStringAtLine(1, message);
-		uint16_t* xs = (uint16_t*) PATTERN_COORDS_X[pattern_id];
-		uint16_t* ys = (uint16_t*) PATTERN_COORDS_Y[pattern_id];
+		float32_t* xs = (float32_t*) PATTERN_COORDS_X[pattern_id];
+		float32_t* ys = (float32_t*) PATTERN_COORDS_Y[pattern_id];
+		uint16_t x1, y1, x2, y2;
 		BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
 		for (i = 1; i < PATTERN_SIZE; i++) {
-			BSP_LCD_DrawLine(xs[i-1], ys[i-1], xs[i], ys[i]);
+			x1 = (uint16_t) (xs[i-1] * lcd_w);
+			y1 = (uint16_t) (ys[i-1] * lcd_h);
+			x2 = (uint16_t) (xs[i] * lcd_w);
+			y2 = (uint16_t) (ys[i] * lcd_h);
+			BSP_LCD_DrawLine(x1, y1, x2, y2);
 		}
 		BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
 		HAL_Delay(500);
@@ -158,8 +165,12 @@ void ArmTest() {
 	tick = HAL_GetTick();
 	for (i = 0; i < repeat; i++) {
 		int32_t j;
+		float32_t* v1_ptr = v1;
+		float32_t* v2_ptr = v2;
+		float32_t* res_ptr = res;
 		for (j = 0; j < size; j++) {
-			res[j] = v1[j] + v2[j];
+			*(res_ptr++) = *(v1_ptr++) + *(v2_ptr++);
+//			res[j] = v1[j] + v2[j];
 		}
 	}
 	dur = HAL_GetTick() - tick;
@@ -226,10 +237,11 @@ int main(void)
   uint32_t tick, last_touch = 0;
   uint8_t message[20];
   DTW_Pattern pattern = {m_touches_x, m_touches_y, PATTERN_SIZE};
+  uint8_t predicted;
   sprintf((char*) message, "Draw a pattern");
   BSP_LCD_DisplayStringAtLine(0, message);
 
-  ArmTest();
+//  ArmTest();
 
   while (1) {
 	  BSP_TS_GetState(&ts_state);
@@ -241,7 +253,7 @@ int main(void)
 	  } else if (tick - last_touch > 1000 || TS_GetCacheState() == FULL) {
 		  if (TS_GetCacheState() == DIRTY) {
 			  TS_Dump(&pattern);
-			  uint8_t predicted = DTW_ClassifyChar(&pattern);
+			  DTW_ClassifyChar(&pattern, &predicted);
 			  BSP_LCD_Clear(LCD_COLOR_BLACK);
 			  TS_Reset();
 			  sprintf((char*) message, "You wrote: %c", (char) predicted);

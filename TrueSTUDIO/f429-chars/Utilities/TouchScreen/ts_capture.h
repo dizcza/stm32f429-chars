@@ -11,6 +11,7 @@
 #define TS_CAPTURE_CACHE_SIZE     1000
 #define TS_CAPTURE_NO_TOUCH_TICK  20
 
+#include <stdint.h>
 #include "stm32f429i_discovery_ts.h"
 #include "dtw.h"
 
@@ -23,7 +24,7 @@ typedef enum {
 int8_t TS_SaveTouch(const TS_StateTypeDef *TsState);
 void TS_DrawLastStroke();
 void TS_DrawAllStrokes();
-void TS_Dump(DTW_Pattern* pattern);
+void TS_Dump(DTW_Pattern* sample);
 TS_CacheState TS_GetCacheState();
 void TS_Reset();
 
