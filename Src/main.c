@@ -69,6 +69,8 @@
 #include "stm32f429i_discovery_lcd.h"
 #include "char_patterns.h"
 #include "TouchScreen/ts_capture.h"
+
+#include "arm_math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -129,6 +131,40 @@ void DrawPatterns() {
 		}
 	}
 	BSP_LCD_Clear(LCD_COLOR_BLACK);
+}
+
+#include <math.h>
+
+void ArmTest() {
+	uint8_t message[20];
+	uint32_t i, size = 100;
+	float32_t v1[size];
+	float32_t v2[size];
+	float32_t res[size];
+	float32_t b;
+	for (i = 0; i < size; i++) {
+		v1[i] = (float32_t) i;
+		v2[i] = (float32_t) i;
+	}
+	uint32_t tick, dur, repeat=10000;
+	tick = HAL_GetTick();
+	for (i = 0; i < repeat; i++) {
+		arm_add_f32(v1, v2, res, size);
+	}
+	dur = HAL_GetTick() - tick;
+	sprintf((char*) message, "%lu", dur);
+	BSP_LCD_DisplayStringAtLine(3, message);
+
+	tick = HAL_GetTick();
+	for (i = 0; i < repeat; i++) {
+		int32_t j;
+		for (j = 0; j < size; j++) {
+			res[j] = v1[j] + v2[j];
+		}
+	}
+	dur = HAL_GetTick() - tick;
+	sprintf((char*) message, "%lu", dur);
+	BSP_LCD_DisplayStringAtLine(4, message);
 }
 
 /* USER CODE END 0 */
@@ -192,6 +228,8 @@ int main(void)
   DTW_Pattern pattern = {m_touches_x, m_touches_y, PATTERN_SIZE};
   sprintf((char*) message, "Draw a pattern");
   BSP_LCD_DisplayStringAtLine(0, message);
+
+  ArmTest();
 
   while (1) {
 	  BSP_TS_GetState(&ts_state);
