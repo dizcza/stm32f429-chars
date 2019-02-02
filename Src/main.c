@@ -67,9 +67,10 @@
 #include "stm32f429i_discovery_ts.h"
 #include "stm32f429i_discovery_io.h"
 #include "stm32f429i_discovery_lcd.h"
-#include "char_patterns.h"
-#include "TouchScreen/ts_capture.h"
 
+#include "TouchScreen/ts_capture.h"
+#include "char_patterns.h"
+#include "preprocess.h"
 #include "arm_math.h"
 /* USER CODE END Includes */
 
@@ -236,7 +237,7 @@ int main(void)
   TS_StateTypeDef ts_state;
   uint32_t tick, last_touch = 0;
   uint8_t message[20];
-  DTW_Pattern pattern = {m_touches_x, m_touches_y, PATTERN_SIZE};
+  DTW_Pattern sample = {m_touches_x, m_touches_y, PATTERN_SIZE};
   uint8_t predicted;
   sprintf((char*) message, "Draw a pattern");
   BSP_LCD_DisplayStringAtLine(0, message);
@@ -245,17 +246,18 @@ int main(void)
 
   while (1) {
 	  BSP_TS_GetState(&ts_state);
-	  TS_SaveTouch(&ts_state);
+	  TS_Capture_SaveTouch(&ts_state);
 	  tick = HAL_GetTick();
 	  if (ts_state.TouchDetected) {
-		  TS_DrawLastStroke();
+		  TS_Capture_DrawLastStroke();
 		  last_touch = tick;
-	  } else if (tick - last_touch > 1000 || TS_GetCacheState() == FULL) {
-		  if (TS_GetCacheState() == DIRTY) {
-			  TS_Dump(&pattern);
-			  DTW_ClassifyChar(&pattern, &predicted);
+	  } else if (tick - last_touch > 1000 || TS_Capture_GetCacheState() == FULL) {
+		  if (TS_Capture_GetCacheState() == DIRTY) {
+			  uint32_t n_touches = TS_Capture_GetNumOfTouches();
+			  DTW_Preprocess(TS_Capture_TouchesX, TS_Capture_TouchesY, n_touches, &sample);
+			  DTW_ClassifyChar(&sample, &predicted);
 			  BSP_LCD_Clear(LCD_COLOR_BLACK);
-			  TS_Reset();
+			  TS_Capture_Reset();
 			  sprintf((char*) message, "You wrote: %c", (char) predicted);
 			  BSP_LCD_DisplayStringAtLine(0, message);
 		  }

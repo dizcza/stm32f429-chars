@@ -13,19 +13,23 @@
 
 #include <stdint.h>
 #include "stm32f429i_discovery_ts.h"
-#include "dtw.h"
 
 typedef enum {
 	EMPTY = 0,
 	DIRTY,  // has some values
 	FULL
-} TS_CacheState;
+} TS_Capture_CacheState;
 
-int8_t TS_SaveTouch(const TS_StateTypeDef *TsState);
-void TS_DrawLastStroke();
-void TS_DrawAllStrokes();
-void TS_Dump(DTW_Pattern* sample);
-TS_CacheState TS_GetCacheState();
-void TS_Reset();
+/* Raw touches */
+uint16_t TS_Capture_TouchesX[TS_CAPTURE_CACHE_SIZE];
+uint16_t TS_Capture_TouchesY[TS_CAPTURE_CACHE_SIZE];
+
+
+int8_t TS_Capture_SaveTouch(const TS_StateTypeDef *TsState);
+void TS_Capture_DrawLastStroke();
+void TS_Capture_DrawAllStrokes();
+uint32_t TS_Capture_GetNumOfTouches();
+TS_Capture_CacheState TS_Capture_GetCacheState();
+void TS_Capture_Reset();
 
 #endif /* TOUCHSCREEN_TS_CAPTURE_H_ */
