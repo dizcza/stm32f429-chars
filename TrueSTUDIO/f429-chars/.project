@@ -106,11 +106,7 @@
 			<type>1</type>
 			<location>PARENT-2-PROJECT_LOC/Src/gpio.c</location>
 		</link>
-    <link>
-			<name>Application/User/crc.c</name>
-			<type>1</type>
-			<location>PARENT-2-PROJECT_LOC/Src/crc.c</location>
-		</link>
+    
     <link>
 			<name>Application/User/dma2d.c</name>
 			<type>1</type>
@@ -141,11 +137,7 @@
 			<type>1</type>
 			<location>PARENT-2-PROJECT_LOC/Src/spi.c</location>
 		</link>
-    <link>
-			<name>Application/User/tim.c</name>
-			<type>1</type>
-			<location>PARENT-2-PROJECT_LOC/Src/tim.c</location>
-		</link>
+    
     <link>
 			<name>Application/User/usart.c</name>
 			<type>1</type>
@@ -181,11 +173,7 @@
 		</link>
     
     
-    <link>
-			<name>Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_crc.c</name>
-			<type>1</type>
-			<location>PARENT-2-PROJECT_LOC/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c</location>
-		</link>
+    
     <link>
 			<name>Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_dma2d.c</name>
 			<type>1</type>
@@ -382,6 +370,18 @@
     
     
   <link>
+      
+      <type>2</type>
+      
+    </link><link>
+      
+      <type>2</type>
+      
+    </link><link>
+      
+      <type>2</type>
+      
+    </link><link>
       
       <type>2</type>
       
