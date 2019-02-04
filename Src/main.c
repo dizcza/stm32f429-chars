@@ -228,6 +228,8 @@ int main(void)
   BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
   BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
 
+  DTW_Test();
+
 //  DrawPatterns();
 
   TS_StateTypeDef ts_state;
@@ -389,6 +391,12 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+	BSP_LCD_SetFont(&Font12);
+	uint8_t assert_msg[32];
+	sprintf((char*) assert_msg, "Failed at line %ld", line);
+	BSP_LCD_DisplayStringAtLine(0, file);
+	BSP_LCD_DisplayStringAtLine(1, assert_msg);
+	BSP_LCD_SetFont(&Font16);
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
