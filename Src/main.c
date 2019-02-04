@@ -70,6 +70,10 @@
 #include "char_patterns.h"
 #include "preprocess.h"
 #include "arm_math.h"
+
+// Tests
+#include "dtw_test.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
