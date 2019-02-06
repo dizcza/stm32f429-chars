@@ -12,7 +12,7 @@
 #include "dtw_test.h"
 #include "dtw.h"
 
-void DTW_ComputeDistanceMatrix(DTW_Pattern* sample, DTW_Pattern* pattern,
+void DTW_ComputeDistanceClassic(DTW_Pattern* sample, DTW_Pattern* pattern,
 		float32_t* dist) {
 	assert_param(pattern->size == PATTERN_SIZE);
 	assert_param(sample->size <= PATTERN_SIZE);
@@ -60,7 +60,7 @@ void DTW_Test() {
 			ycoords_pattern[i] = rand() % 10;
 		}
 		float dist_old, dist;
-		DTW_ComputeDistanceMatrix(&sample, &pattern, &dist_old);
+		DTW_ComputeDistanceClassic(&sample, &pattern, &dist_old);
 		DTW_ComputeDistance(&sample, &pattern, &dist);
 		assert_param(fabsf(dist - dist_old) < DTW_TEST_EPS);
 	}

@@ -73,6 +73,7 @@
 
 // Tests
 #include "dtw_test.h"
+#include "OnlineMean/test_onlinemean.h"
 
 /* USER CODE END Includes */
 
@@ -231,8 +232,10 @@ int main(void)
   BSP_LCD_Clear(LCD_COLOR_BLACK);
   BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
   BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
+  BSP_LCD_SetFont(&Font16);
 
   DTW_Test();
+  OnlineMean_Test();
 
 //  DrawPatterns();
 
@@ -259,9 +262,10 @@ int main(void)
 			  DTW_Preprocess(TS_Capture_TouchesX, TS_Capture_TouchesY, n_touches, &sample);
 			  DTW_ClassifyChar(&sample, &predicted);
 			  BSP_LCD_Clear(LCD_COLOR_BLACK);
-			  TS_Capture_Reset();
 			  sprintf((char*) message, "You wrote: %c", (char) predicted);
 			  BSP_LCD_DisplayStringAtLine(0, message);
+			  TS_Capture_PrintInfoLCD(1);
+			  TS_Capture_Reset();
 		  }
 	  }
   }
@@ -378,6 +382,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
+  HAL_GPIO_WritePin(GPIOG, GPIO_PIN_14, GPIO_PIN_SET);
 
   /* USER CODE END Error_Handler_Debug */
 }
@@ -397,9 +402,11 @@ void assert_failed(uint8_t *file, uint32_t line)
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
 	BSP_LCD_SetFont(&Font12);
 	uint8_t assert_msg[32];
-	sprintf((char*) assert_msg, "Failed at line %ld", line);
-	BSP_LCD_DisplayStringAtLine(0, file);
-	BSP_LCD_DisplayStringAtLine(1, assert_msg);
+	sprintf((char*) assert_msg, "Failed at line %lu", line);
+	sFONT *font = BSP_LCD_GetFont();
+	uint32_t n_lines = BSP_LCD_GetYSize() * 1.f / font->Height;
+	BSP_LCD_DisplayStringAtLine(n_lines - 2, file);
+	BSP_LCD_DisplayStringAtLine(n_lines - 1, assert_msg);
 	BSP_LCD_SetFont(&Font16);
   /* USER CODE END 6 */
 }

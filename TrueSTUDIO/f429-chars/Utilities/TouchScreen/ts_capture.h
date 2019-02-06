@@ -18,10 +18,14 @@
 uint16_t TS_Capture_TouchesX[TS_CAPTURE_CACHE_SIZE];
 uint16_t TS_Capture_TouchesY[TS_CAPTURE_CACHE_SIZE];
 
+void TS_Capture_Init();
 int8_t TS_Capture_SaveTouch(const TS_StateTypeDef *TsState);
 void TS_Capture_DrawLastStroke();
 void TS_Capture_DrawAllStrokes();
 uint32_t TS_Capture_GetNumOfTouches();
 void TS_Capture_Reset();
+
+/* Helpers */
+void TS_Capture_PrintInfoLCD(uint16_t startLine);
 
 #endif /* TOUCHSCREEN_TS_CAPTURE_H_ */
