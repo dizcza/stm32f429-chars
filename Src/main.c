@@ -50,7 +50,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os.h"
 #include "dma2d.h"
 #include "i2c.h"
 #include "ltdc.h"
@@ -104,7 +103,6 @@ static float32_t m_touches_y[PATTERN_SIZE];
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -249,7 +247,12 @@ int main(void)
 
 //  ArmTest();
 
-  while (1) {
+  /* USER CODE END 2 */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
 	  BSP_TS_GetState(&ts_state);
 	  TS_Capture_SaveTouch(&ts_state);
 	  tick = HAL_GetTick();
@@ -268,23 +271,6 @@ int main(void)
 			  TS_Capture_Reset();
 		  }
 	  }
-  }
-
-
-  /* USER CODE END 2 */
-
-  /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init();
-
-  /* Start scheduler */
-  osKernelStart();
-  
-  /* We should never get here as control is now taken by the scheduler */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
