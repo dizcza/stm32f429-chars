@@ -73,6 +73,7 @@
 // Tests
 #include "dtw_test.h"
 #include "OnlineMean/test_onlinemean.h"
+#include "Tests/tests.h"
 
 /* USER CODE END Includes */
 
@@ -142,43 +143,6 @@ void DrawPatterns() {
 	BSP_LCD_Clear(LCD_COLOR_BLACK);
 }
 
-#include <math.h>
-
-void ArmTest() {
-	uint8_t message[20];
-	uint32_t i, size = 100;
-	float32_t v1[size];
-	float32_t v2[size];
-	float32_t res[size];
-	float32_t b;
-	for (i = 0; i < size; i++) {
-		v1[i] = (float32_t) i;
-		v2[i] = (float32_t) i;
-	}
-	uint32_t tick, dur, repeat=10000;
-	tick = HAL_GetTick();
-	for (i = 0; i < repeat; i++) {
-		arm_add_f32(v1, v2, res, size);
-	}
-	dur = HAL_GetTick() - tick;
-	sprintf((char*) message, "%lu", dur);
-	BSP_LCD_DisplayStringAtLine(3, message);
-
-	tick = HAL_GetTick();
-	for (i = 0; i < repeat; i++) {
-		int32_t j;
-		float32_t* v1_ptr = v1;
-		float32_t* v2_ptr = v2;
-		float32_t* res_ptr = res;
-		for (j = 0; j < size; j++) {
-			*(res_ptr++) = *(v1_ptr++) + *(v2_ptr++);
-//			res[j] = v1[j] + v2[j];
-		}
-	}
-	dur = HAL_GetTick() - tick;
-	sprintf((char*) message, "%lu", dur);
-	BSP_LCD_DisplayStringAtLine(4, message);
-}
 
 /* USER CODE END 0 */
 
@@ -236,6 +200,9 @@ int main(void)
   OnlineMean_Test();
 
 //  DrawPatterns();
+  Test_ArmAdd32();
+  HAL_Delay(1000);
+  BSP_LCD_Clear(LCD_COLOR_BLACK);
 
   TS_StateTypeDef ts_state;
   uint32_t tick, last_touch = 0;
@@ -244,8 +211,6 @@ int main(void)
   uint8_t predicted;
   sprintf((char*) message, "Draw a pattern");
   BSP_LCD_DisplayStringAtLine(0, message);
-
-//  ArmTest();
 
   /* USER CODE END 2 */
 
