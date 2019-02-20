@@ -199,10 +199,11 @@ int main(void)
   DTW_Test();
   OnlineMean_Test();
   Test_Preprocess_CorrectSlant();
-  Test_ArmAdd32();
+//  Test_ArmAdd32();
   HAL_Delay(1000);
 
 //  DrawPatterns();
+  Test_ShearTransformUI();
 
   BSP_LCD_Clear(LCD_COLOR_BLACK);
 

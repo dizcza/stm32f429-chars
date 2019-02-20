@@ -17,6 +17,6 @@
 void Test_AllClose(const float32_t *arr1, const float32_t *arr2, uint32_t size);
 void Test_ArmAdd32();
 void Test_Preprocess_CorrectSlant();
-
+void Test_ShearTransformUI();
 
 #endif /* TEST_TESTS_H_ */
