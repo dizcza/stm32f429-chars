@@ -67,13 +67,13 @@
 
 #include "TouchScreen/ts_capture.h"
 #include "char_patterns.h"
-#include "preprocess.h"
+#include "Preprocess/preprocess.h"
 #include "arm_math.h"
 
 // Tests
+#include "Test/tests.h"
 #include "dtw_test.h"
 #include "OnlineMean/test_onlinemean.h"
-#include "Tests/tests.h"
 
 /* USER CODE END Includes */
 
@@ -198,10 +198,12 @@ int main(void)
 
   DTW_Test();
   OnlineMean_Test();
-
-//  DrawPatterns();
+  Test_Preprocess_CorrectSlant();
   Test_ArmAdd32();
   HAL_Delay(1000);
+
+//  DrawPatterns();
+
   BSP_LCD_Clear(LCD_COLOR_BLACK);
 
   TS_StateTypeDef ts_state;
@@ -227,7 +229,7 @@ int main(void)
 	  } else if (tick - last_touch > 1000) {
 		  uint32_t n_touches = TS_Capture_GetNumOfTouches();
 		  if (n_touches > 2) {
-			  DTW_Preprocess(TS_Capture_TouchesX, TS_Capture_TouchesY, n_touches, &sample);
+			  Preprocess_MakePattern(TS_Capture_TouchesX, TS_Capture_TouchesY, n_touches, &sample);
 			  DTW_ClassifyChar(&sample, &predicted);
 			  BSP_LCD_Clear(LCD_COLOR_BLACK);
 			  sprintf((char*) message, "You wrote: %c", (char) predicted);

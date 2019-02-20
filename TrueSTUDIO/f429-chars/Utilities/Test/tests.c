@@ -6,9 +6,9 @@
  */
 
 
+#include "Test/tests.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f429i_discovery_lcd.h"
-#include "tests.h"
 
 #define TEST_ARRAY_SIZE 100
 

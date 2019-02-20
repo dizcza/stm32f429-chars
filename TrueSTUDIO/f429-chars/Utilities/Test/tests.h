@@ -5,8 +5,8 @@
  *      Author: dizcza
  */
 
-#ifndef TESTS_TESTS_H_
-#define TESTS_TESTS_H_
+#ifndef TEST_TESTS_H_
+#define TEST_TESTS_H_
 
 #include "arm_math.h"
 
@@ -16,6 +16,7 @@
 
 void Test_AllClose(const float32_t *arr1, const float32_t *arr2, uint32_t size);
 void Test_ArmAdd32();
+void Test_Preprocess_CorrectSlant();
 
 
-#endif /* TESTS_TESTS_H_ */
+#endif /* TEST_TESTS_H_ */

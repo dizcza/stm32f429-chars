@@ -1,12 +1,15 @@
 /*
  * preprocess.c
  *
- *  Created on: Feb 2, 2019
+ *  Created on: Feb 20, 2019
  *      Author: dizcza
  */
 
+
 #include "preprocess.h"
 #include "char_patterns.h"
+
+#define COTANG_50  0.8391f
 
 typedef struct BBox {
 	uint16_t xmin, ymin, xmax, ymax;
@@ -82,7 +85,35 @@ static void Normalize(uint16_t* bufferX, uint16_t* bufferY, uint32_t size,
 	sample->size = size;
 }
 
-void DTW_Preprocess(uint16_t* bufferX, uint16_t* bufferY, uint32_t bufferSize,
+void Preprocess_CorrectSlant(uint16_t* bufferX, uint16_t* bufferY, uint32_t size) {
+	int32_t dx, dy, dx_slant = 0, dy_slant = 0;
+	uint32_t i;
+	for (i = 1; i < size; i++) {
+		dx = ((int32_t) bufferX[i]) - bufferX[i-1];
+		dy = ((int32_t) bufferY[i]) - bufferY[i-1];
+		if (fabsf(dy * 1.f / dx) > COTANG_50) {
+			if (dy < 0) {
+				dy *= -1;
+				dx *= -1;
+			}
+			dx_slant += dx;
+			dy_slant += dy;
+		}
+	}
+	if (dy_slant == 0) {
+		// don't correct horizontal slam
+		return;
+	}
+	const float shear = dx_slant * (-1.f) / dy_slant;
+	float x_shifted;
+	for (i = 0; i < size; i++) {
+		x_shifted = bufferX[i] + bufferY[i] * shear;
+		x_shifted = fmaxf(x_shifted, 0);
+		bufferX[i] = (uint16_t) x_shifted;
+	}
+}
+
+void Preprocess_MakePattern(uint16_t* bufferX, uint16_t* bufferY, uint32_t bufferSize,
 		DTW_Pattern* sample) {
 	if (bufferSize < 2) {
 		return;  // not enough points
@@ -97,6 +128,7 @@ void DTW_Preprocess(uint16_t* bufferX, uint16_t* bufferY, uint32_t bufferSize,
 		buffer_processed_y = m_buffer_reduced_y;
 		n_touches = PATTERN_SIZE;
 	}
+	Preprocess_CorrectSlant(buffer_processed_x, buffer_processed_y, n_touches);
 	BBox box;
 	GetBBox(buffer_processed_x, buffer_processed_y, n_touches, &box);
 	Normalize(buffer_processed_x, buffer_processed_y, n_touches, &box, sample);
