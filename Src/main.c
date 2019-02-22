@@ -115,13 +115,13 @@ void DrawPatterns() {
 	uint8_t message[40];
 	uint16_t lcd_w = BSP_LCD_GetXSize();
 	uint16_t lcd_h = BSP_LCD_GetYSize();
-	for (pattern_id = 0; pattern_id < ALPHABET_SIZE; pattern_id++) {
+	for (pattern_id = 0; pattern_id < TOTAL_PATTERNS; pattern_id++) {
 		BSP_LCD_Clear(LCD_COLOR_BLACK);
 		BSP_LCD_SetFont(&Font8);
 	    sprintf((char*) message, "Press B1 button to select the next pattern");
 		BSP_LCD_DisplayStringAtLine(0, message);
 		BSP_LCD_SetFont(&Font16);
-	    sprintf((char*) message, "Pattern: %c", (char) ALPHABET[pattern_id]);
+	    sprintf((char*) message, "Pattern: %c", (char) PATTERN_LABEL[pattern_id]);
 		BSP_LCD_DisplayStringAtLine(1, message);
 		float32_t* xs = (float32_t*) PATTERN_COORDS_X[pattern_id];
 		float32_t* ys = (float32_t*) PATTERN_COORDS_Y[pattern_id];
@@ -203,7 +203,7 @@ int main(void)
   HAL_Delay(1000);
 
 //  DrawPatterns();
-  Test_ShearTransformUI();
+//  Test_ShearTransformUI();
 
   BSP_LCD_Clear(LCD_COLOR_BLACK);
 

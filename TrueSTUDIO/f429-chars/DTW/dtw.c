@@ -67,7 +67,7 @@ void DTW_ClassifyChar(DTW_Pattern* pattern, uint8_t* predictedChar) {
 	float32_t dist, dist_min = HUGE_VALF;
 	DTW_Pattern stored_pattern;
 	stored_pattern.size = PATTERN_SIZE;
-	for (pattern_id = 0; pattern_id < ALPHABET_SIZE; pattern_id++) {
+	for (pattern_id = 0; pattern_id < TOTAL_PATTERNS; pattern_id++) {
 		stored_pattern.xcoords = (float32_t*) PATTERN_COORDS_X[pattern_id];
 		stored_pattern.ycoords = (float32_t*) PATTERN_COORDS_Y[pattern_id];
 		DTW_ComputeDistance(pattern, &stored_pattern, &dist);
@@ -76,5 +76,5 @@ void DTW_ClassifyChar(DTW_Pattern* pattern, uint8_t* predictedChar) {
 			predicted_id = pattern_id;
 		}
 	}
-	*predictedChar = ALPHABET[predicted_id];
+	*predictedChar = PATTERN_LABEL[predicted_id];
 }

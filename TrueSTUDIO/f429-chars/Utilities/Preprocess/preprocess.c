@@ -64,19 +64,16 @@ static void ReduceTouches(uint16_t* bufferX, uint16_t* bufferY,
 
 static void Normalize(uint16_t* bufferX, uint16_t* bufferY, uint32_t size,
 		BBox* box, DTW_Pattern* sample) {
-	uint16_t width = box->xmax - box->xmin;
-	uint16_t height = box->ymax - box->ymin;
-	if (width / height > ASPECT_RATIO_MAX) {
-		// height is too small
-		height = width;
-	} else if (height / width > ASPECT_RATIO_MAX) {
-		// width is too small
-		width = height;
-	}
 	const float32_t xc = 0.5f * (box->xmin + box->xmax);
 	const float32_t yc = 0.5f * (box->ymin + box->ymax);
-	const float32_t x_scale = 1.f / width;
-	const float32_t y_scale = 1.f / height;
+	float32_t x_scale = 1.f / (box->xmax - box->xmin);
+	float32_t y_scale = 1.f / (box->ymax - box->ymin);
+#if PREPROCESS_KEEP_ASPECT_RATIO
+	const float32_t scale = fminf(x_scale, y_scale);
+	x_scale = scale;
+	y_scale = scale;
+#endif  /* PREPROCESS_KEEP_ASPECT_RATIO */
+
 	uint32_t i;
 	for (i = 0; i < size; i++) {
 		sample->xcoords[i] = 0.5f + (bufferX[i] - xc) * x_scale;
