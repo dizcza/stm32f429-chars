@@ -22,14 +22,19 @@ static void DrawStroke(int32_t touch_id) {
 			TS_Capture_TouchesY[touch_id]);
 }
 
+static uint8_t IsDuplicate(const TS_StateTypeDef *TsState) {
+	return (m_touch_id >= 0) && (TS_Capture_TouchesX[m_touch_id] == TsState->X)
+			&& (TS_Capture_TouchesY[m_touch_id] == TsState->Y);
+}
+
 void TS_Capture_Init() {
 	TS_Capture_Reset();
 }
 
-int8_t TS_Capture_SaveTouch(const TS_StateTypeDef *TsState) {
+TS_Capture_SaveTouchDef TS_Capture_SaveTouch(const TS_StateTypeDef *TsState) {
 	m_calls++;
 	if (m_touch_id == TS_CAPTURE_CACHE_SIZE - 1) {
-		return 1;  // full cache
+		return TS_CAPTURE_FULL_CACHE;
 	}
 	uint32_t tick = HAL_GetTick();
 	uint32_t duration = tick - m_last_touch_tick;
@@ -37,16 +42,19 @@ int8_t TS_Capture_SaveTouch(const TS_StateTypeDef *TsState) {
 		if (duration > TS_CAPTURE_NO_TOUCH_TICK) {
 			m_finished = m_touch_id;
 		}
-		return -1;
+		return TS_CAPTURE_NO_TOUCH;
 	}
 	m_last_touch_tick = tick;
+	if (IsDuplicate(TsState)) {
+		return TS_CAPTURE_DUPLICATE;
+	}
 	m_touch_id++;
 	TS_Capture_TouchesX[m_touch_id] = TsState->X;
 	TS_Capture_TouchesY[m_touch_id] = TsState->Y;
 	if (m_touch_id > 0) {
 		OnlineMean_Update(&m_touch_duration, duration);
 	}
-	return 0;
+	return TS_CAPTURE_SAVED;
 }
 
 void TS_Capture_DrawLastStroke() {
@@ -75,7 +83,8 @@ void TS_Capture_PrintInfoLCD(uint16_t startLine) {
 	sprintf((char*) message, "[TS] %lu touches", n_touches);
 	BSP_LCD_DisplayStringAtLine(startLine++, message);
 	float std = OnlineMean_GetStd(&m_touch_duration);
-	sprintf((char*) message, "[TS] %ld +- %.1f ms", (int32_t) m_touch_duration.mean, std);
+	sprintf((char*) message, "[TS] %ld +- %.1f ms",
+			(int32_t) m_touch_duration.mean, std);
 	BSP_LCD_DisplayStringAtLine(startLine++, message);
 }
 

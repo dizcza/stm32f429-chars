@@ -14,12 +14,19 @@
 #include <stdint.h>
 #include "stm32f429i_discovery_ts.h"
 
+typedef enum {
+	TS_CAPTURE_SAVED = 0,  // success
+	TS_CAPTURE_FULL_CACHE,
+	TS_CAPTURE_NO_TOUCH,
+	TS_CAPTURE_DUPLICATE
+} TS_Capture_SaveTouchDef;
+
 /* Raw touches */
 uint16_t TS_Capture_TouchesX[TS_CAPTURE_CACHE_SIZE];
 uint16_t TS_Capture_TouchesY[TS_CAPTURE_CACHE_SIZE];
 
 void TS_Capture_Init();
-int8_t TS_Capture_SaveTouch(const TS_StateTypeDef *TsState);
+TS_Capture_SaveTouchDef TS_Capture_SaveTouch(const TS_StateTypeDef *TsState);
 void TS_Capture_DrawLastStroke();
 void TS_Capture_DrawAllStrokes();
 uint32_t TS_Capture_GetNumOfTouches();
