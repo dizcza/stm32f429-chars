@@ -211,7 +211,7 @@ int main(void)
   uint32_t tick, last_touch = 0;
   uint8_t message[20];
   DTW_Pattern sample = {m_touches_x, m_touches_y, PATTERN_SIZE};
-  uint8_t predicted;
+  DTW_ResultInfo result_info;
   sprintf((char*) message, "Draw a pattern");
   BSP_LCD_DisplayStringAtLine(0, message);
 
@@ -231,11 +231,9 @@ int main(void)
 		  uint32_t n_touches = TS_Capture_GetNumOfTouches();
 		  if (n_touches > 2) {
 			  Preprocess_MakePattern(TS_Capture_TouchesX, TS_Capture_TouchesY, n_touches, &sample);
-			  DTW_ClassifyChar(&sample, &predicted);
+			  DTW_ClassifyChar(&sample, &result_info);
 			  BSP_LCD_Clear(LCD_COLOR_BLACK);
-			  sprintf((char*) message, "You wrote: %c", (char) predicted);
-			  BSP_LCD_DisplayStringAtLine(0, message);
-			  TS_Capture_PrintInfoLCD(1);
+			  DTW_PrintResult(&result_info);
 			  TS_Capture_Reset();
 		  }
 	  }

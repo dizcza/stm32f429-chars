@@ -28,15 +28,15 @@
 // DTW cost matrix top line
 static float32_t m_dist_top[PATTERN_SIZE_EXTENDED];
 
-int32_t int32_mod(int a, int b) {
-	int mod = a % b;
+int32_t int32_mod(int32_t a, int32_t b) {
+	int32_t mod = a % b;
 	if (mod < 0) {
 		mod += b;
 	}
 	return mod;
 }
 
-void DTW_ComputeDistance(DTW_Pattern* sample, DTW_Pattern* pattern,
+void DTW_ComputeDistance(const DTW_Pattern* sample, const DTW_Pattern* pattern,
 		float32_t* dist) {
 	// note, that we don't constrain sample's size
 	assert_param(pattern->size == PATTERN_SIZE);
@@ -62,7 +62,8 @@ void DTW_ComputeDistance(DTW_Pattern* sample, DTW_Pattern* pattern,
 	*dist = m_dist_top[k];
 }
 
-void DTW_ClassifyChar(DTW_Pattern* pattern, uint8_t* predictedChar) {
+void DTW_ClassifyChar(const DTW_Pattern* pattern, DTW_ResultInfo* resultInfo) {
+	uint32_t tick_start = HAL_GetTick();
 	int32_t pattern_id, predicted_id = 0;
 	float32_t dist, dist_min = HUGE_VALF;
 	DTW_Pattern stored_pattern;
@@ -76,5 +77,7 @@ void DTW_ClassifyChar(DTW_Pattern* pattern, uint8_t* predictedChar) {
 			predicted_id = pattern_id;
 		}
 	}
-	*predictedChar = PATTERN_LABEL[predicted_id];
+	resultInfo->predicted_char = PATTERN_LABEL[predicted_id];
+	resultInfo->duration = HAL_GetTick() - tick_start;
+	resultInfo->distance = dist_min / pattern->size;
 }

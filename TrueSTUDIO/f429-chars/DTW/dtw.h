@@ -29,8 +29,16 @@ typedef struct DTW_Pattern {
 	uint32_t size;
 } DTW_Pattern;
 
-void DTW_ComputeDistance(DTW_Pattern* sample, DTW_Pattern* pattern,
+typedef struct DTW_ResultInfo {
+	char predicted_char;
+	uint32_t duration;
+	float32_t distance;
+} DTW_ResultInfo;
+
+void DTW_ComputeDistance(const DTW_Pattern* sample, const DTW_Pattern* pattern,
 		float32_t* dist);
-void DTW_ClassifyChar(DTW_Pattern* sample, uint8_t* predictedChar);
+void DTW_ClassifyChar(const DTW_Pattern* sample, DTW_ResultInfo* resultInfo);
+
+void DTW_PrintResult(const DTW_ResultInfo* resultInfo);
 
 #endif /* DTW_DTW_H_ */
