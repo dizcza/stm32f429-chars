@@ -15,17 +15,22 @@ typedef struct BBox {
 	uint16_t xmin, ymin, xmax, ymax;
 } BBox;
 
+typedef struct BBoxFloat {
+	float32_t xmin, ymin, xmax, ymax;
+} BBoxFloat;
+
 /* Reduced buffer */
 static uint16_t m_buffer_reduced_x[PATTERN_SIZE];
 static uint16_t m_buffer_reduced_y[PATTERN_SIZE];
+static BBoxFloat m_normalized_box;
 
-static void GetBBox(uint16_t* bufferX, uint16_t* bufferY, uint32_t size,
+static void GetBBox(const uint16_t* bufferX, const uint16_t* bufferY, uint32_t size,
 		BBox* box) {
 	uint16_t xmin = UINT16_MAX, xmax = 0, ymin = UINT16_MAX, ymax = 0;
 	uint16_t i, x, y;
 	for (i = 0; i < size; i++) {
-		x = bufferX[i];
-		y = bufferY[i];
+		x = *bufferX++;
+		y = *bufferY++;
 		if (x < xmin) {
 			xmin = x;
 		}
@@ -45,7 +50,7 @@ static void GetBBox(uint16_t* bufferX, uint16_t* bufferY, uint32_t size,
 	box->ymax = ymax;
 }
 
-static void ReduceTouches(uint16_t* bufferX, uint16_t* bufferY,
+static void ReduceTouches(const uint16_t* bufferX, const uint16_t* bufferY,
 		uint32_t bufferSize) {
 	// reduce to one size
 	const float step = bufferSize * 1.0f / PATTERN_SIZE;
@@ -62,12 +67,14 @@ static void ReduceTouches(uint16_t* bufferX, uint16_t* bufferY,
 	}
 }
 
-static void Normalize(uint16_t* bufferX, uint16_t* bufferY, uint32_t size,
-		BBox* box, DTW_Pattern* sample) {
+static void Normalize(const uint16_t* bufferX, const uint16_t* bufferY, uint32_t size,
+		const BBox* box, CharPattern* sample) {
 	const float32_t xc = 0.5f * (box->xmin + box->xmax);
 	const float32_t yc = 0.5f * (box->ymin + box->ymax);
-	float32_t x_scale = 1.f / (box->xmax - box->xmin);
-	float32_t y_scale = 1.f / (box->ymax - box->ymin);
+	const float32_t xc_normalized = 0.5f * (m_normalized_box.xmax + m_normalized_box.xmin);
+	const float32_t yc_normalized = 0.5f * (m_normalized_box.ymax + m_normalized_box.ymin);
+	float32_t x_scale = (m_normalized_box.xmax - m_normalized_box.xmin) / (box->xmax - box->xmin);
+	float32_t y_scale = (m_normalized_box.ymax - m_normalized_box.ymin) / (box->ymax - box->ymin);
 #if PREPROCESS_KEEP_ASPECT_RATIO
 	const float32_t scale = fminf(x_scale, y_scale);
 	x_scale = scale;
@@ -75,11 +82,27 @@ static void Normalize(uint16_t* bufferX, uint16_t* bufferY, uint32_t size,
 #endif  /* PREPROCESS_KEEP_ASPECT_RATIO */
 
 	uint32_t i;
+	float32_t x_float, y_float;
 	for (i = 0; i < size; i++) {
-		sample->xcoords[i] = 0.5f + (bufferX[i] - xc) * x_scale;
-		sample->ycoords[i] = 0.5f + (bufferY[i] - yc) * y_scale;
+		x_float = xc_normalized + (*bufferX++ - xc) * x_scale;
+		y_float = yc_normalized + (*bufferY++ - yc) * y_scale;
+#ifdef CHAR_PATTERNS_DATATYPE_Q7
+		*sample->xcoords++ = __SSAT((q31_t) (x_float * 128.0f), 8);
+		*sample->ycoords++ = __SSAT((q31_t) (y_float * 128.0f), 8);
+#else
+		*sample->xcoords++ = x_float;
+		*sample->ycoords++ = y_float;
+#endif  /* CHAR_PATTERNS_DATATYPE_Q7 */
 	}
 	sample->size = size;
+}
+
+
+void Preprocess_Init() {
+	m_normalized_box.xmin = -1.f;
+	m_normalized_box.xmax = 1.f - CHAR_PATTERNS_RESOLUTION;
+	m_normalized_box.ymin = -1.f;
+	m_normalized_box.ymax = 1.f - CHAR_PATTERNS_RESOLUTION;
 }
 
 void Preprocess_CorrectSlant(uint16_t* bufferX, uint16_t* bufferY, uint32_t size) {
@@ -111,7 +134,7 @@ void Preprocess_CorrectSlant(uint16_t* bufferX, uint16_t* bufferY, uint32_t size
 }
 
 void Preprocess_MakePattern(uint16_t* bufferX, uint16_t* bufferY, uint32_t bufferSize,
-		DTW_Pattern* sample) {
+		CharPattern* sample) {
 	if (bufferSize < 2) {
 		return;  // not enough points
 	}
@@ -120,6 +143,7 @@ void Preprocess_MakePattern(uint16_t* bufferX, uint16_t* bufferY, uint32_t buffe
 	uint32_t n_touches = bufferSize;
 	if (n_touches > PATTERN_SIZE) {
 		// reduce to one size
+		// todo inplace ReduceTouches
 		ReduceTouches(bufferX, bufferY, bufferSize);
 		buffer_processed_x = m_buffer_reduced_x;
 		buffer_processed_y = m_buffer_reduced_y;

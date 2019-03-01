@@ -12,7 +12,8 @@
 
 #include "dtw.h"
 
-void Preprocess_MakePattern(uint16_t* bufferX, uint16_t* bufferY, uint32_t bufferSize, DTW_Pattern* sample);
+void Preprocess_Init();
+void Preprocess_MakePattern(uint16_t* bufferX, uint16_t* bufferY, uint32_t bufferSize, CharPattern* sample);
 void Preprocess_CorrectSlant(uint16_t* bufferX, uint16_t* bufferY, uint32_t size);
 
 #endif /* PREPROCESS_PREPROCESS_H_ */

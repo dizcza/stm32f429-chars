@@ -8,7 +8,7 @@
 #include "stm32f429i_discovery_lcd.h"
 #include "dtw.h"
 
-void DTW_PrintResult(const DTW_ResultInfo* resultInfo) {
+void DTW_PrintResult(const CharPattern_PredictedInfo* resultInfo) {
 	uint8_t message[20];
 	uint16_t start_line = 1;
 	sprintf((char*) message, "You wrote: %c", (char) resultInfo->predicted_char);

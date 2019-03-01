@@ -96,10 +96,6 @@
 
 /* USER CODE BEGIN PV */
 
-/* Processed touches */
-static float32_t m_touches_x[PATTERN_SIZE];
-static float32_t m_touches_y[PATTERN_SIZE];
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -199,7 +195,7 @@ int main(void)
   DTW_Test();
   OnlineMean_Test();
   Test_Preprocess_CorrectSlant();
-//  Test_ArmAdd32();
+  Test_ArmAdd32();
   HAL_Delay(1000);
 
 //  DrawPatterns();
@@ -210,8 +206,13 @@ int main(void)
   TS_StateTypeDef ts_state;
   uint32_t tick, last_touch = 0;
   uint8_t message[20];
-  DTW_Pattern sample = {m_touches_x, m_touches_y, PATTERN_SIZE};
-  DTW_ResultInfo result_info;
+
+  /* Processed touches */
+  float_coord touches_x[PATTERN_SIZE];
+  float_coord touches_y[PATTERN_SIZE];
+  CharPattern sample = {touches_x, touches_y, PATTERN_SIZE};
+  CharPattern_PredictedInfo result_info;
+
   sprintf((char*) message, "Draw a pattern");
   BSP_LCD_DisplayStringAtLine(0, message);
 
@@ -360,6 +361,7 @@ void assert_failed(uint8_t *file, uint32_t line)
 	BSP_LCD_DisplayStringAtLine(n_lines - 2, file);
 	BSP_LCD_DisplayStringAtLine(n_lines - 1, assert_msg);
 	BSP_LCD_SetFont(&Font16);
+    HAL_GPIO_WritePin(GPIOG, GPIO_PIN_14, GPIO_PIN_SET);
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

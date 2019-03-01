@@ -20,8 +20,8 @@
 <booleanAttribute key="com.atollic.hardwaredebug.launch.startServer" value="true"/>
 <booleanAttribute key="com.atollic.hardwaredebug.launch.swd_mode" value="true"/>
 <stringAttribute key="com.atollic.hardwaredebug.launch.swv_port" value="61235"/>
-<stringAttribute key="com.atollic.hardwaredebug.launch.swv_trace_div" value="120"/>
-<stringAttribute key="com.atollic.hardwaredebug.launch.swv_trace_hclk" value="120000000"/>
+<stringAttribute key="com.atollic.hardwaredebug.launch.swv_trace_div" value="90"/>
+<stringAttribute key="com.atollic.hardwaredebug.launch.swv_trace_hclk" value="180000000"/>
 <booleanAttribute key="com.atollic.hardwaredebug.launch.swv_wait_for_sync" value="true"/>
 <intAttribute key="com.atollic.hardwaredebug.launch.trace_system" value="0"/>
 <booleanAttribute key="com.atollic.hardwaredebug.launch.useRemoteTarget" value="true"/>
@@ -32,8 +32,17 @@
 <stringAttribute key="com.atollic.hardwaredebug.stlink.external_loader" value=""/>
 <stringAttribute key="com.atollic.hardwaredebug.stlink.log_file" value="/home/dizcza/microcontrollers/STM32_Projects/f429-chars//TrueSTUDIO/f429-chars\Debug\st-link_gdbserver_log.txt"/>
 <booleanAttribute key="com.atollic.hardwaredebug.stlink.stlink_check_serial_number" value="false"/>
-<stringAttribute key="com.atollic.hardwaredebug.stlink.stlink_txt_serial_number" value=""/>
+<stringAttribute key="com.atollic.hardwaredebug.stlink.stlink_txt_serial_number" value="066CFF535550755187195333"/>
 <booleanAttribute key="com.atollic.hardwaredebug.stlink.verify_flash" value="false"/>
+<stringAttribute key="com.atollic.truestudio.swv.core.datatrace_0" value="Enabled=true:Address=dummy:Access=Read/Write:Size=Word:Function=Data Value + PC"/>
+<stringAttribute key="com.atollic.truestudio.swv.core.datatrace_1" value="Enabled=false:Address=0x0:Access=Read/Write:Size=Word:Function=Data Value"/>
+<stringAttribute key="com.atollic.truestudio.swv.core.datatrace_2" value="Enabled=false:Address=0x0:Access=Read/Write:Size=Word:Function=Data Value"/>
+<stringAttribute key="com.atollic.truestudio.swv.core.datatrace_3" value="Enabled=false:Address=0x0:Access=Read/Write:Size=Word:Function=Data Value"/>
+<stringAttribute key="com.atollic.truestudio.swv.core.itmports" value="0:0:0:0:0:0:0:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:1"/>
+<stringAttribute key="com.atollic.truestudio.swv.core.itmports_priv" value="0:0:0:0"/>
+<stringAttribute key="com.atollic.truestudio.swv.core.pc_sample" value="0:16384"/>
+<stringAttribute key="com.atollic.truestudio.swv.core.timestamps" value="1:1"/>
+<stringAttribute key="com.atollic.truestudio.swv.core.trace_events" value="Cpi=0:Exc=0:Sleep=0:Lsu=0:Fold=0:Exetrc=0"/>
 <stringAttribute key="org.eclipse.cdt.debug.mi.core.DEBUG_NAME" value="${TOOLCHAIN_PATH}/arm-atollic-eabi-gdb"/>
 <stringAttribute key="org.eclipse.cdt.debug.mi.core.commandFactory" value="Standard (Windows)"/>
 <stringAttribute key="org.eclipse.cdt.debug.mi.core.protocol" value="mi"/>

@@ -1,3 +1,4 @@
+
 /*
  * char_patterns.h
  *
@@ -8,15 +9,38 @@
 #ifndef CHAR_PATTERNS_H_
 #define CHAR_PATTERNS_H_
 
+// do not modify this
+#define CHAR_PATTERNS_DATATYPE_Q7
+
 #define PATTERN_SIZE      50
-#define TOTAL_PATTERNS    131
+#define TOTAL_PATTERNS    141
 
 #include <stdint.h>
 #include "arm_math.h"
 
-extern const uint8_t PATTERN_LABEL[TOTAL_PATTERNS];
+#ifdef CHAR_PATTERNS_DATATYPE_Q7
+#define CHAR_PATTERNS_RESOLUTION  (0.0078125f)
 
-extern const float32_t PATTERN_COORDS_X[TOTAL_PATTERNS][PATTERN_SIZE];
-extern const float32_t PATTERN_COORDS_Y[TOTAL_PATTERNS][PATTERN_SIZE];
+typedef q7_t float_coord;
+#else
+#define CHAR_PATTERNS_RESOLUTION  (0.0f)
+
+typedef float32_t float_coord;
+#endif  /* CHAR_PATTERNS_DATATYPE_Q7 */
+
+typedef struct CharPattern {
+    float_coord *xcoords, *ycoords;
+    uint32_t size;
+} CharPattern;
+
+typedef struct CharPattern_PredictedInfo {
+    char predicted_char;
+    uint32_t duration;
+    float32_t distance;
+} CharPattern_PredictedInfo;
+
+extern const uint8_t PATTERN_LABEL[TOTAL_PATTERNS];
+extern const float_coord PATTERN_COORDS_X[TOTAL_PATTERNS][PATTERN_SIZE];
+extern const float_coord PATTERN_COORDS_Y[TOTAL_PATTERNS][PATTERN_SIZE];
 
 #endif /* CHAR_PATTERNS_H_ */

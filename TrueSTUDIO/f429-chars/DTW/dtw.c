@@ -22,6 +22,7 @@
 #include "dtw.h"
 #include "math.h"
 #include "char_patterns.h"
+#include "arm_math.h"
 
 #define PATTERN_SIZE_EXTENDED (PATTERN_SIZE + 2)
 
@@ -36,7 +37,7 @@ int32_t int32_mod(int32_t a, int32_t b) {
 	return mod;
 }
 
-void DTW_ComputeDistance(const DTW_Pattern* sample, const DTW_Pattern* pattern,
+void DTW_ComputeDistance(const CharPattern_32t* sample, const CharPattern_32t* pattern,
 		float32_t* dist) {
 	// note, that we don't constrain sample's size
 	assert_param(pattern->size == PATTERN_SIZE);
@@ -62,16 +63,29 @@ void DTW_ComputeDistance(const DTW_Pattern* sample, const DTW_Pattern* pattern,
 	*dist = m_dist_top[k];
 }
 
-void DTW_ClassifyChar(const DTW_Pattern* pattern, DTW_ResultInfo* resultInfo) {
+void DTW_ClassifyChar(const CharPattern* sample, CharPattern_PredictedInfo* resultInfo) {
 	uint32_t tick_start = HAL_GetTick();
-	int32_t pattern_id, predicted_id = 0;
+	uint32_t pattern_id, predicted_id = 0;
 	float32_t dist, dist_min = HUGE_VALF;
-	DTW_Pattern stored_pattern;
-	stored_pattern.size = PATTERN_SIZE;
+	CharPattern_32t sample_32t, pattern;
+	pattern.size = PATTERN_SIZE;
+#ifdef CHAR_PATTERNS_DATATYPE_Q7
+	float32_t sample_xy[2][TOTAL_PATTERNS];
+	float32_t pattern_xy[2][TOTAL_PATTERNS];
+	arm_q7_to_float(sample->xcoords, sample_xy[0], sample->size);
+	arm_q7_to_float(sample->ycoords, sample_xy[1], sample->size);
+	pattern.xcoords = pattern_xy[0];
+	pattern.ycoords = pattern_xy[1];
+#endif  /* CHAR_PATTERNS_DATATYPE_Q7 */
 	for (pattern_id = 0; pattern_id < TOTAL_PATTERNS; pattern_id++) {
-		stored_pattern.xcoords = (float32_t*) PATTERN_COORDS_X[pattern_id];
-		stored_pattern.ycoords = (float32_t*) PATTERN_COORDS_Y[pattern_id];
-		DTW_ComputeDistance(pattern, &stored_pattern, &dist);
+#ifdef CHAR_PATTERNS_DATATYPE_Q7
+		arm_q7_to_float(PATTERN_COORDS_X[pattern_id], &pattern.xcoords, pattern.size);
+		arm_q7_to_float(PATTERN_COORDS_Y[pattern_id], &pattern.ycoords, pattern.size);
+#else
+		pattern.xcoords = (float32_t*) PATTERN_COORDS_X[pattern_id];
+		pattern.ycoords = (float32_t*) PATTERN_COORDS_Y[pattern_id];
+#endif  /* CHAR_PATTERNS_DATATYPE_Q7 */
+		DTW_ComputeDistance(sample, &pattern, &dist);
 		if (dist < dist_min) {
 			dist_min = dist;
 			predicted_id = pattern_id;
@@ -79,5 +93,5 @@ void DTW_ClassifyChar(const DTW_Pattern* pattern, DTW_ResultInfo* resultInfo) {
 	}
 	resultInfo->predicted_char = PATTERN_LABEL[predicted_id];
 	resultInfo->duration = HAL_GetTick() - tick_start;
-	resultInfo->distance = dist_min / pattern->size;
+	resultInfo->distance = dist_min / sample->size;
 }

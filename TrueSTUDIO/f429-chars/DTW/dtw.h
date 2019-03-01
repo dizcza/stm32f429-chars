@@ -23,22 +23,22 @@
 
 #include <stdint.h>
 #include "arm_math.h"
+#include "char_patterns.h"
 
-typedef struct DTW_Pattern {
+#ifdef CHAR_PATTERNS_DATATYPE_Q7
+typedef struct CharPattern_32t {
 	float32_t *xcoords, *ycoords;
 	uint32_t size;
-} DTW_Pattern;
+} CharPattern_32t;
+#else
+typedef CharPattern CharPattern_32t;
+#endif  /* CHAR_PATTERNS_DATATYPE_Q7 */
 
-typedef struct DTW_ResultInfo {
-	char predicted_char;
-	uint32_t duration;
-	float32_t distance;
-} DTW_ResultInfo;
 
-void DTW_ComputeDistance(const DTW_Pattern* sample, const DTW_Pattern* pattern,
+void DTW_ComputeDistance(const CharPattern_32t* sample, const CharPattern_32t* pattern,
 		float32_t* dist);
-void DTW_ClassifyChar(const DTW_Pattern* sample, DTW_ResultInfo* resultInfo);
+void DTW_ClassifyChar(const CharPattern* sample, CharPattern_PredictedInfo* resultInfo);
 
-void DTW_PrintResult(const DTW_ResultInfo* resultInfo);
+void DTW_PrintResult(const CharPattern_PredictedInfo* resultInfo);
 
 #endif /* DTW_DTW_H_ */
