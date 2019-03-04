@@ -40,5 +40,6 @@ void DTW_ComputeDistance(const CharPattern_32t* sample, const CharPattern_32t* p
 void DTW_ClassifyChar(const CharPattern* sample, CharPattern_PredictedInfo* resultInfo);
 
 void DTW_PrintResult(const CharPattern_PredictedInfo* resultInfo);
+void DTW_DrawPattern(const CharPattern* pattern);
 
 #endif /* DTW_DTW_H_ */

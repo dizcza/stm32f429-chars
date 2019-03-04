@@ -12,7 +12,7 @@
 #include "dtw_test.h"
 #include "dtw.h"
 
-void DTW_ComputeDistanceClassic(CharPattern* sample, CharPattern* pattern,
+void DTW_ComputeDistanceClassic(CharPattern_32t* sample, CharPattern_32t* pattern,
 		float32_t* dist) {
 	assert_param(pattern->size == PATTERN_SIZE);
 	assert_param(sample->size <= PATTERN_SIZE);
@@ -48,8 +48,8 @@ void DTW_Test() {
 	float32_t ycoords_sample[PATTERN_SIZE];
 	float32_t xcoords_pattern[PATTERN_SIZE];
 	float32_t ycoords_pattern[PATTERN_SIZE];
-	CharPattern sample = { xcoords_sample, ycoords_sample, PATTERN_SIZE };
-	CharPattern pattern = { xcoords_pattern, ycoords_pattern, PATTERN_SIZE };
+	CharPattern_32t sample = { xcoords_sample, ycoords_sample, PATTERN_SIZE };
+	CharPattern_32t pattern = { xcoords_pattern, ycoords_pattern, PATTERN_SIZE };
 	int32_t test_id;
 	for (test_id = 0; test_id < 10; test_id++) {
 		int32_t i;

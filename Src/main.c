@@ -107,10 +107,12 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 void DrawPatterns() {
-	int32_t pattern_id, i;
+	uint32_t pattern_id;
 	uint8_t message[40];
-	uint16_t lcd_w = BSP_LCD_GetXSize();
-	uint16_t lcd_h = BSP_LCD_GetYSize();
+	CharPattern pattern;
+	pattern.size = PATTERN_SIZE;
+	// fixme PRECISERR without the prior accessing pattern.xcoords
+	float_coord x0 = pattern.xcoords[0];
 	for (pattern_id = 0; pattern_id < TOTAL_PATTERNS; pattern_id++) {
 		BSP_LCD_Clear(LCD_COLOR_BLACK);
 		BSP_LCD_SetFont(&Font8);
@@ -119,18 +121,9 @@ void DrawPatterns() {
 		BSP_LCD_SetFont(&Font16);
 	    sprintf((char*) message, "Pattern: %c", (char) PATTERN_LABEL[pattern_id]);
 		BSP_LCD_DisplayStringAtLine(1, message);
-		float32_t* xs = (float32_t*) PATTERN_COORDS_X[pattern_id];
-		float32_t* ys = (float32_t*) PATTERN_COORDS_Y[pattern_id];
-		uint16_t x1, y1, x2, y2;
-		BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
-		for (i = 1; i < PATTERN_SIZE; i++) {
-			x1 = (uint16_t) (xs[i-1] * lcd_w);
-			y1 = (uint16_t) (ys[i-1] * lcd_h);
-			x2 = (uint16_t) (xs[i] * lcd_w);
-			y2 = (uint16_t) (ys[i] * lcd_h);
-			BSP_LCD_DrawLine(x1, y1, x2, y2);
-		}
-		BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
+		pattern.xcoords = (float_coord*) PATTERN_COORDS_X[pattern_id];
+		pattern.ycoords = (float_coord*) PATTERN_COORDS_Y[pattern_id];
+		DTW_DrawPattern(&pattern);
 		HAL_Delay(500);
 		while (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) != 1) {
 			// wait for user interact
@@ -195,8 +188,8 @@ int main(void)
   DTW_Test();
   OnlineMean_Test();
   Test_Preprocess_CorrectSlant();
-  Test_ArmAdd32();
-  HAL_Delay(1000);
+//  Test_ArmAdd32();
+//  HAL_Delay(1000);
 
 //  DrawPatterns();
 //  Test_ShearTransformUI();
@@ -232,6 +225,7 @@ int main(void)
 		  uint32_t n_touches = TS_Capture_GetNumOfTouches();
 		  if (n_touches > 2) {
 			  Preprocess_MakePattern(TS_Capture_TouchesX, TS_Capture_TouchesY, n_touches, &sample);
+			  DTW_DrawPattern(&sample);
 			  DTW_ClassifyChar(&sample, &result_info);
 			  BSP_LCD_Clear(LCD_COLOR_BLACK);
 			  DTW_PrintResult(&result_info);

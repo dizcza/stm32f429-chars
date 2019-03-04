@@ -68,24 +68,30 @@ void DTW_ClassifyChar(const CharPattern* sample, CharPattern_PredictedInfo* resu
 	uint32_t pattern_id, predicted_id = 0;
 	float32_t dist, dist_min = HUGE_VALF;
 	CharPattern_32t sample_32t, pattern;
+	sample_32t.size = sample->size;
 	pattern.size = PATTERN_SIZE;
 #ifdef CHAR_PATTERNS_DATATYPE_Q7
 	float32_t sample_xy[2][TOTAL_PATTERNS];
 	float32_t pattern_xy[2][TOTAL_PATTERNS];
 	arm_q7_to_float(sample->xcoords, sample_xy[0], sample->size);
 	arm_q7_to_float(sample->ycoords, sample_xy[1], sample->size);
+	sample_32t.xcoords = sample_xy[0];
+	sample_32t.ycoords = sample_xy[1];
 	pattern.xcoords = pattern_xy[0];
 	pattern.ycoords = pattern_xy[1];
+#else
+	sample_32t.xcoords = sample->xcoords;
+	sample_32t.ycoords = sample->ycoords;
 #endif  /* CHAR_PATTERNS_DATATYPE_Q7 */
 	for (pattern_id = 0; pattern_id < TOTAL_PATTERNS; pattern_id++) {
 #ifdef CHAR_PATTERNS_DATATYPE_Q7
-		arm_q7_to_float(PATTERN_COORDS_X[pattern_id], &pattern.xcoords, pattern.size);
-		arm_q7_to_float(PATTERN_COORDS_Y[pattern_id], &pattern.ycoords, pattern.size);
+		arm_q7_to_float(PATTERN_COORDS_X[pattern_id], pattern.xcoords, pattern.size);
+		arm_q7_to_float(PATTERN_COORDS_Y[pattern_id], pattern.ycoords, pattern.size);
 #else
 		pattern.xcoords = (float32_t*) PATTERN_COORDS_X[pattern_id];
 		pattern.ycoords = (float32_t*) PATTERN_COORDS_Y[pattern_id];
 #endif  /* CHAR_PATTERNS_DATATYPE_Q7 */
-		DTW_ComputeDistance(sample, &pattern, &dist);
+		DTW_ComputeDistance(&sample_32t, &pattern, &dist);
 		if (dist < dist_min) {
 			dist_min = dist;
 			predicted_id = pattern_id;

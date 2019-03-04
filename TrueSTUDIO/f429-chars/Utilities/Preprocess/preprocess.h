@@ -12,8 +12,20 @@
 
 #include "dtw.h"
 
-void Preprocess_Init();
-void Preprocess_MakePattern(uint16_t* bufferX, uint16_t* bufferY, uint32_t bufferSize, CharPattern* sample);
-void Preprocess_CorrectSlant(uint16_t* bufferX, uint16_t* bufferY, uint32_t size);
+typedef struct BBox {
+	float32_t xmin, ymin, xmax, ymax;
+} BBox;
+
+extern const BBox CharPatterns_Box;
+
+void Preprocess_MakePattern(uint16_t* bufferX, uint16_t* bufferY,
+		uint32_t bufferSize, CharPattern* sample);
+
+void Preprocess_Normalize(const uint16_t* bufferX, const uint16_t* bufferY,
+		CharPattern* sample);
+void Preprocess_NormalizeInverse(const CharPattern* sample, uint16_t* bufferX,
+		uint16_t* bufferY, const BBox* boxTo);
+void Preprocess_CorrectSlant(uint16_t* bufferX, uint16_t* bufferY,
+		uint32_t size);
 
 #endif /* PREPROCESS_PREPROCESS_H_ */
