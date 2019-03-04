@@ -37,9 +37,16 @@ typedef CharPattern CharPattern_32t;
 #endif  /* CHAR_PATTERNS_DATATYPE_Q7 */
 
 
+typedef struct CharPattern_q15 {
+	q15_t *xcoords, *ycoords;
+	uint32_t size;
+} CharPattern_q15;
+
 void DTW_ComputeDistance(const CharPattern_32t* sample, const CharPattern_32t* pattern,
 		float32_t* dist);
 void Euclidean_ComputeDistance(const CharPattern_32t* sample, const CharPattern_32t* pattern,
+		float32_t* dist);
+void Euclidean_ComputeDistance_q15(const CharPattern_q15* sample, const CharPattern_q15* pattern,
 		float32_t* dist);
 void DTW_ClassifyChar(const CharPattern* sample, CharPattern_PredictedInfo* resultInfo);
 

@@ -76,6 +76,31 @@ void Euclidean_ComputeDistance(const CharPattern_32t* sample, const CharPattern_
 	*dist = dist_sum;
 }
 
+
+void Euclidean_ComputeDistance_q15(const CharPattern_q15* sample, const CharPattern_q15* pattern,
+		float32_t* dist) {
+	assert_param(sample->size == pattern->size);
+	q15_t dx[2], dy[2], dist_block[2];
+	uint32_t blkCnt = sample->size >> 1U;
+	float32_t dist_sum = 0;
+
+	q15_t *sampleX = sample->xcoords;
+	q15_t *sampleY = sample->ycoords;
+	q15_t *patternX = pattern->xcoords;
+	q15_t *patternY = pattern->ycoords;
+
+	while (blkCnt > 0U) {
+		*__SIMD32(dx) = __QSUB16(*__SIMD32(sampleX)++, *__SIMD32(patternX)++);
+		*__SIMD32(dy) = __QSUB16(*__SIMD32(sampleY)++, *__SIMD32(patternY)++);
+		*__SIMD32(dist_block) = __SMUAD(*__SIMD32(dx), *__SIMD32(dx));
+		*__SIMD32(dist_block) = __SMLAD(*__SIMD32(dy), *__SIMD32(dy), *__SIMD32(dist_block));
+		dist_sum += (float32_t) dist_block[0] / 32768.0f;
+		dist_sum += (float32_t) dist_block[1] / 32768.0f;
+		blkCnt--;
+	}
+	*dist = dist_sum;
+}
+
 void DTW_ClassifyChar(const CharPattern* sample, CharPattern_PredictedInfo* resultInfo) {
 	uint32_t tick_start = HAL_GetTick();
 	uint32_t pattern_id, predicted_id = 0;

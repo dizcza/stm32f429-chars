@@ -10,7 +10,7 @@
 #define CHAR_PATTERNS_H_
 
 // do not modify this
-//#define CHAR_PATTERNS_DATATYPE_Q7
+#define CHAR_PATTERNS_DATATYPE_Q7
 
 #define PATTERN_SIZE      30
 #define TOTAL_PATTERNS    143

@@ -188,8 +188,9 @@ int main(void)
   DTW_Test();
   OnlineMean_Test();
   Test_Preprocess_CorrectSlant();
+  Test_Euclidean();
 //  Test_ArmAdd32();
-//  HAL_Delay(1000);
+  HAL_Delay(1000);
 
 //  DrawPatterns();
 //  Test_ShearTransformUI();

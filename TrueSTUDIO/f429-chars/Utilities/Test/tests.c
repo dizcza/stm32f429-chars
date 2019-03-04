@@ -6,9 +6,11 @@
  */
 
 
+#include <stdlib.h>
 #include "Test/tests.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f429i_discovery_lcd.h"
+#include "dtw.h"
 
 #define TEST_ARRAY_SIZE 100
 
@@ -85,6 +87,46 @@ void arm_add_f32_mine(
   (byte & 0x02 ? '1' : '0'), \
   (byte & 0x01 ? '1' : '0')
 
+
+void Test_Euclidean() {
+	float32_t xcoords_float[PATTERN_SIZE];
+	float32_t ycoords_float[PATTERN_SIZE];
+	q15_t xcoords_q15[PATTERN_SIZE];
+	q15_t ycoords_q15[PATTERN_SIZE];
+	uint8_t message[20];
+	uint32_t duration, start;
+	uint16_t start_line = 0U;
+	uint32_t test_count = 1000U;
+
+	uint32_t i = 0;
+	for (i = 0; i < PATTERN_SIZE; i++) {
+		xcoords_float[i] = ((float32_t) rand()) / RAND_MAX - 0.5f;
+		ycoords_float[i] = ((float32_t) rand()) / RAND_MAX - 0.5f;
+	}
+	arm_float_to_q15(xcoords_float, xcoords_q15, PATTERN_SIZE);
+	arm_float_to_q15(ycoords_float, ycoords_q15, PATTERN_SIZE);
+	CharPattern_32t sample_float = { xcoords_float, ycoords_float, PATTERN_SIZE };
+	CharPattern_q15 sample_q15 = { xcoords_q15, ycoords_q15, PATTERN_SIZE };
+	uint32_t test_id;
+
+	start = HAL_GetTick();
+	for (test_id = 0; test_id < test_count; test_id++) {
+		float32_t dist;
+		Euclidean_ComputeDistance(&sample_float, &sample_float, &dist);
+	}
+	duration = HAL_GetTick() - start;
+	sprintf((char*) message, "Euclidean: %lu ms", duration);
+	BSP_LCD_DisplayStringAtLine(start_line++, message);
+
+	start = HAL_GetTick();
+	for (test_id = 0; test_id < test_count; test_id++) {
+		float32_t dist;
+		Euclidean_ComputeDistance_q15(&sample_q15, &sample_q15, &dist);
+	}
+	duration = HAL_GetTick() - start;
+	sprintf((char*) message, "Euclidean q15: %lu ms", duration);
+	BSP_LCD_DisplayStringAtLine(start_line++, message);
+}
 
 void Test_ArmAdd32() {
 	// initialize arrays
