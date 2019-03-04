@@ -63,6 +63,19 @@ void DTW_ComputeDistance(const CharPattern_32t* sample, const CharPattern_32t* p
 	*dist = m_dist_top[k];
 }
 
+void Euclidean_ComputeDistance(const CharPattern_32t* sample, const CharPattern_32t* pattern,
+		float32_t* dist) {
+	assert_param(sample->size == pattern->size);
+	uint32_t i;
+	float32_t dx, dy, dist_sum = 0;
+	for (i = 0; i < sample->size; i++) {
+		dx = sample->xcoords[i] - pattern->xcoords[i];
+		dy = sample->ycoords[i] - pattern->ycoords[i];
+		dist_sum += dx * dx + dy * dy;
+	}
+	*dist = dist_sum;
+}
+
 void DTW_ClassifyChar(const CharPattern* sample, CharPattern_PredictedInfo* resultInfo) {
 	uint32_t tick_start = HAL_GetTick();
 	uint32_t pattern_id, predicted_id = 0;
@@ -91,7 +104,11 @@ void DTW_ClassifyChar(const CharPattern* sample, CharPattern_PredictedInfo* resu
 		pattern.xcoords = (float32_t*) PATTERN_COORDS_X[pattern_id];
 		pattern.ycoords = (float32_t*) PATTERN_COORDS_Y[pattern_id];
 #endif  /* CHAR_PATTERNS_DATATYPE_Q7 */
+#ifdef USE_EUCLIDEAN
+		Euclidean_ComputeDistance(&sample_32t, &pattern, &dist);
+#else
 		DTW_ComputeDistance(&sample_32t, &pattern, &dist);
+#endif  /* USE_EUCLIDEAN */
 		if (dist < dist_min) {
 			dist_min = dist;
 			predicted_id = pattern_id;

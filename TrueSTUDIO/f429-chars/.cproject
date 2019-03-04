@@ -19,7 +19,7 @@
 							<option id="com.atollic.truestudio.toolchain_options.mcu.493013593" name="Microcontroller" superClass="com.atollic.truestudio.toolchain_options.mcu" useByScannerDiscovery="false" value="STM32F429ZI" valueType="string"/>
 							<option id="com.atollic.truestudio.toolchain_options.vendor.1581746970" name="Vendor name" superClass="com.atollic.truestudio.toolchain_options.vendor" useByScannerDiscovery="false" value="STMicroelectronics" valueType="string"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.atollic.truestudio.exe.debug.toolchain.platform.2054752829" isAbstract="false" name="Debug platform" superClass="com.atollic.truestudio.exe.debug.toolchain.platform"/>
-							<builder buildPath="${workspace_loc:/f429-chars}/Debug" customBuilderProperties="toolChainpathString=/opt/Atollic_TrueSTUDIO_for_STM32_x86_64_9.2.0/ARMTools/bin|com.atollic.truestudio.common_options.target.mcu=STM32F429ZI|toolChainpathType=1|com.atollic.truestudio.common_options.target.vendor=STMicroelectronics|" errorParsers="" id="com.atollic.truestudio.mbs.builder1.1222194476" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="com.atollic.truestudio.mbs.builder1">
+							<builder buildPath="${workspace_loc:/f429-chars}/Debug" customBuilderProperties="toolChainpathString=/opt/Atollic_TrueSTUDIO_for_STM32_x86_64_9.2.0/ARMTools/bin|toolChainpathType=1|com.atollic.truestudio.common_options.target.vendor=STMicroelectronics|com.atollic.truestudio.common_options.target.mcu=STM32F429ZI|" errorParsers="" id="com.atollic.truestudio.mbs.builder1.1222194476" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="com.atollic.truestudio.mbs.builder1">
 								<outputEntries>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="Debug"/>
 								</outputEntries>
@@ -83,7 +83,7 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="arm_cortexM4lf_math"/>
 								</option>
 								<option id="com.atollic.truestudio.ld.libraries.searchpath.1273009461" name="Library search path" superClass="com.atollic.truestudio.ld.libraries.searchpath" useByScannerDiscovery="false" valueType="libPaths">
-									<listOptionValue builtIn="false" value="/home/dizcza/microcontrollers/cubemx_f4_v1.23.0/Drivers/CMSIS/Lib/GCC"/>
+									<listOptionValue builtIn="false" value="/home/dizcza/microcontrollers/CMSIS_5/CMSIS/Lib/GCC"/>
 								</option>
 								<option id="com.atollic.truestudio.ld.misc.linkerflags.1948405714" name="Other options" superClass="com.atollic.truestudio.ld.misc.linkerflags" useByScannerDiscovery="false" value="-u _printf_float" valueType="string"/>
 								<option id="com.atollic.truestudio.common_options.target.fpu.829683864" name="Floating point" superClass="com.atollic.truestudio.common_options.target.fpu" useByScannerDiscovery="false" value="com.atollic.truestudio.common_options.target.fpu.hard" valueType="enumerated"/>

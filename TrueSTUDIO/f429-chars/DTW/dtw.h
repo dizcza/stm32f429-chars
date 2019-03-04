@@ -21,6 +21,8 @@
 #ifndef DTW_DTW_H_
 #define DTW_DTW_H_
 
+#define USE_EUCLIDEAN
+
 #include <stdint.h>
 #include "arm_math.h"
 #include "char_patterns.h"
@@ -36,6 +38,8 @@ typedef CharPattern CharPattern_32t;
 
 
 void DTW_ComputeDistance(const CharPattern_32t* sample, const CharPattern_32t* pattern,
+		float32_t* dist);
+void Euclidean_ComputeDistance(const CharPattern_32t* sample, const CharPattern_32t* pattern,
 		float32_t* dist);
 void DTW_ClassifyChar(const CharPattern* sample, CharPattern_PredictedInfo* resultInfo);
 

@@ -226,6 +226,7 @@ int main(void)
 		  if (n_touches > 2) {
 			  Preprocess_MakePattern(TS_Capture_TouchesX, TS_Capture_TouchesY, n_touches, &sample);
 			  DTW_DrawPattern(&sample);
+			  HAL_Delay(300);
 			  DTW_ClassifyChar(&sample, &result_info);
 			  BSP_LCD_Clear(LCD_COLOR_BLACK);
 			  DTW_PrintResult(&result_info);

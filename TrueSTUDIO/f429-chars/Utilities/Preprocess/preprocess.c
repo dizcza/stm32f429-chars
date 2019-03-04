@@ -158,9 +158,12 @@ void Preprocess_MakePattern(uint16_t* bufferX, uint16_t* bufferY,
 	uint16_t* buffer_processed_x = bufferX;
 	uint16_t* buffer_processed_y = bufferY;
 	uint32_t n_touches = bufferSize;
-	if (n_touches > PATTERN_SIZE) {
+	uint8_t make_sample_fixed_size = n_touches > PATTERN_SIZE;
+#ifdef USE_EUCLIDEAN
+	make_sample_fixed_size = 1U;
+#endif  /* USE_EUCLIDEAN */
+	if (make_sample_fixed_size) {
 		// reduce to one size
-		// todo inplace ReduceTouches
 		ReduceTouches(bufferX, bufferY, bufferSize);
 		buffer_processed_x = m_buffer_reduced_x;
 		buffer_processed_y = m_buffer_reduced_y;
