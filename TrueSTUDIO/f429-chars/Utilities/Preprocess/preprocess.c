@@ -159,6 +159,7 @@ void Preprocess_MakePattern(uint16_t* bufferX, uint16_t* bufferY,
 	uint16_t* buffer_processed_y = bufferY;
 	uint32_t n_touches = bufferSize;
 	uint8_t make_sample_fixed_size = n_touches > PATTERN_SIZE;
+	make_sample_fixed_size = 1U;
 #ifdef USE_EUCLIDEAN
 	make_sample_fixed_size = 1U;
 #endif  /* USE_EUCLIDEAN */

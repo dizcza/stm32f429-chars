@@ -5,6 +5,7 @@
  *      Author: dizcza
  */
 
+#include <stdio.h>
 #include "stm32f429i_discovery_lcd.h"
 #include "dtw.h"
 #include "Preprocess/preprocess.h"

@@ -12,8 +12,8 @@
 // do not modify this
 //#define CHAR_PATTERNS_DATATYPE_Q7
 
-#define PATTERN_SIZE      30
-#define TOTAL_PATTERNS    143
+#define PATTERN_SIZE      20
+#define TOTAL_PATTERNS    141
 
 #include <stdint.h>
 #include "arm_math.h"
