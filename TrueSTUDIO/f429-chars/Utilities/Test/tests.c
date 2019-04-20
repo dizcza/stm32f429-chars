@@ -13,7 +13,7 @@
 #define TEST_ARRAY_SIZE 100
 
 
-void Test_AllClose(const float32_t *arr1, const float32_t *arr2, uint32_t size) {
+void Test_AllClose(const float *arr1, const float *arr2, uint32_t size) {
 	uint32_t i = 0;
 	for (i = 0; i < size; i++) {
 		assert_param(fabsf(arr1[i] - arr2[i]) < TEST_EPS);
@@ -21,9 +21,9 @@ void Test_AllClose(const float32_t *arr1, const float32_t *arr2, uint32_t size) 
 }
 
 void arm_add_f32_mine(
-  float32_t * pSrcA,
-  float32_t * pSrcB,
-  float32_t * pDst,
+  float * pSrcA,
+  float * pSrcB,
+  float * pDst,
   uint32_t blockSize)
 {
   uint32_t blkCnt;                               /* loop counter */
@@ -88,20 +88,20 @@ void arm_add_f32_mine(
 
 void Test_ArmAdd32() {
 	// initialize arrays
-	float32_t v1[TEST_ARRAY_SIZE];
-	float32_t v2[TEST_ARRAY_SIZE];
-	float32_t res_arm[TEST_ARRAY_SIZE];
-	float32_t res_true[TEST_ARRAY_SIZE];
+	float v1[TEST_ARRAY_SIZE];
+	float v2[TEST_ARRAY_SIZE];
+	float res_arm[TEST_ARRAY_SIZE];
+	float res_true[TEST_ARRAY_SIZE];
 	uint32_t i, trial;
 	for (i = 0; i < TEST_ARRAY_SIZE; i++) {
-		v1[i] = (float32_t) i;
+		v1[i] = (float) i;
 		v2[i] = sqrt(i);
 		res_true[i] = v1[i] + v2[i];
 	}
 
 	// test correctness
 	arm_add_f32_mine(v1, v2, res_arm, TEST_ARRAY_SIZE);
-	Test_AllClose((const float32_t*) res_arm, (const float32_t*) res_true, TEST_ARRAY_SIZE);
+	Test_AllClose((const float*) res_arm, (const float*) res_true, TEST_ARRAY_SIZE);
 
 	// timings
 #ifdef TEST_VERBOSE
@@ -142,9 +142,9 @@ void Test_ArmAdd32() {
 
 	tick = HAL_GetTick();
 	for (trial = 0; trial < repeat; trial++) {
-		float32_t* v1_ptr = v1;
-		float32_t* v2_ptr = v2;
-		float32_t* res_ptr = res_true;
+		float* v1_ptr = v1;
+		float* v2_ptr = v2;
+		float* res_ptr = res_true;
 		for (i = 0; i < TEST_ARRAY_SIZE; i++) {
 			*(res_ptr++) = *(v1_ptr++) + *(v2_ptr++);
 		}

@@ -14,7 +14,7 @@
 #define TEST_VERBOSE  // uncomment to enable verbose tests
 
 
-void Test_AllClose(const float32_t *arr1, const float32_t *arr2, uint32_t size);
+void Test_AllClose(const float *arr1, const float *arr2, uint32_t size);
 void Test_ArmAdd32();
 void Test_Preprocess_CorrectSlant();
 void Test_ShearTransformUI();

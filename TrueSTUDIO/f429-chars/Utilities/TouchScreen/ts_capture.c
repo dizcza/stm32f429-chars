@@ -8,14 +8,13 @@
 #include <stdio.h>
 #include "stm32f429i_discovery_lcd.h"
 #include "ts_capture.h"
-#include "OnlineMean/onlinemean.h"
 
-static int32_t m_finished = -1, m_touch_id = -1;
+static int32_t m_finished = -1;  // previous stroke last point
+static int32_t m_touch_id = -1;  // current touch id
 static uint32_t m_last_touch_tick = 0;
 
 /* Debug information */
 static uint32_t m_calls = 0;  // num of save touch calls
-static OnlineMean m_touch_duration;
 
 static void DrawStroke(int32_t touch_id) {
 	BSP_LCD_DrawLine(TS_Capture_TouchesX[touch_id - 1],
@@ -52,9 +51,6 @@ TS_Capture_SaveTouchDef TS_Capture_SaveTouch(const TS_StateTypeDef *TsState) {
 	m_touch_id++;
 	TS_Capture_TouchesX[m_touch_id] = TsState->X;
 	TS_Capture_TouchesY[m_touch_id] = TsState->Y;
-	if (m_touch_id > 0) {
-		OnlineMean_Update(&m_touch_duration, duration);
-	}
 	return TS_CAPTURE_SAVED;
 }
 
@@ -83,10 +79,6 @@ void TS_Capture_PrintInfoLCD(uint16_t startLine) {
 	BSP_LCD_DisplayStringAtLine(startLine++, message);
 	sprintf((char*) message, "[TS] %lu touches", n_touches);
 	BSP_LCD_DisplayStringAtLine(startLine++, message);
-	float std = OnlineMean_GetStd(&m_touch_duration);
-	sprintf((char*) message, "[TS] %ld +- %.1f ms",
-			(int32_t) m_touch_duration.mean, std);
-	BSP_LCD_DisplayStringAtLine(startLine++, message);
 }
 
 void TS_Capture_Reset() {
@@ -94,5 +86,4 @@ void TS_Capture_Reset() {
 	m_finished = -1;
 	m_calls = 0;
 	m_last_touch_tick = 0;
-	OnlineMean_Reset(&m_touch_duration);
 }

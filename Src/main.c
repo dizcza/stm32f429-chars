@@ -49,6 +49,7 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include <char_pattern.h>
 #include "main.h"
 #include "crc.h"
 #include "dma2d.h"
@@ -70,14 +71,13 @@
 #include "stm32f429i_discovery_lcd.h"
 
 #include "TouchScreen/ts_capture.h"
-#include "char_patterns.h"
 #include "Preprocess/preprocess.h"
 #include "arm_math.h"
+#include "char_pattern.h"
+#include "GRU/gru_infer.h"
 
 // Tests
 #include "Test/tests.h"
-#include "dtw_test.h"
-#include "OnlineMean/test_onlinemean.h"
 
 /* USER CODE END Includes */
 
@@ -110,32 +110,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void DrawPatterns() {
-	uint32_t pattern_id;
-	uint8_t message[40];
-	CharPattern pattern;
-	pattern.size = PATTERN_SIZE;
-	// fixme PRECISERR without the prior accessing pattern.xcoords
-	float_coord x0 = pattern.xcoords[0];
-	for (pattern_id = 0; pattern_id < TOTAL_PATTERNS; pattern_id++) {
-		BSP_LCD_Clear(LCD_COLOR_BLACK);
-		BSP_LCD_SetFont(&Font8);
-	    sprintf((char*) message, "Press B1 button to select the next pattern");
-		BSP_LCD_DisplayStringAtLine(0, message);
-		BSP_LCD_SetFont(&Font16);
-	    sprintf((char*) message, "Pattern: %c", (char) PATTERN_LABEL[pattern_id]);
-		BSP_LCD_DisplayStringAtLine(1, message);
-		pattern.xcoords = (float_coord*) PATTERN_COORDS_X[pattern_id];
-		pattern.ycoords = (float_coord*) PATTERN_COORDS_Y[pattern_id];
-		DTW_DrawPattern(&pattern);
-		HAL_Delay(500);
-		while (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) != 1) {
-			// wait for user interact
-		}
-	}
-	BSP_LCD_Clear(LCD_COLOR_BLACK);
-}
-
 
 /* USER CODE END 0 */
 
@@ -191,13 +165,10 @@ int main(void)
   BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
   BSP_LCD_SetFont(&Font16);
 
-  DTW_Test();
-  OnlineMean_Test();
   Test_Preprocess_CorrectSlant();
 //  Test_ArmAdd32();
 //  HAL_Delay(1000);
 
-//  DrawPatterns();
 //  Test_ShearTransformUI();
 
   BSP_LCD_Clear(LCD_COLOR_BLACK);
@@ -207,8 +178,8 @@ int main(void)
   uint8_t message[20];
 
   /* Processed touches */
-  float_coord touches_x[PATTERN_SIZE];
-  float_coord touches_y[PATTERN_SIZE];
+  float touches_x[PATTERN_SIZE];
+  float touches_y[PATTERN_SIZE];
   CharPattern sample = {touches_x, touches_y, PATTERN_SIZE};
   CharPattern_PredictedInfo result_info;
 
@@ -231,11 +202,10 @@ int main(void)
 		  uint32_t n_touches = TS_Capture_GetNumOfTouches();
 		  if (n_touches > 2) {
 			  Preprocess_MakePattern(TS_Capture_TouchesX, TS_Capture_TouchesY, n_touches, &sample);
-			  DTW_DrawPattern(&sample);
-			  HAL_Delay(300);
-			  DTW_ClassifyChar(&sample, &result_info);
+			  CharPattern_Draw(&sample);
+			  GRU_Infer(&sample, &result_info);
 			  BSP_LCD_Clear(LCD_COLOR_BLACK);
-			  DTW_PrintResult(&result_info);
+			  CharPattern_PrintResult(&result_info);
 			  TS_Capture_Reset();
 		  }
 	  }

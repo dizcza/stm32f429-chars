@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include "stm32f4xx_hal.h"
+#include "stm32f429i_discovery_lcd.h"
 #include "gru_infer.h"
 #include "grunet_data.h"
 
