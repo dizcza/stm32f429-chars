@@ -71,8 +71,7 @@
 
 #include "TouchScreen/ts_capture.h"
 #include "Preprocess/preprocess.h"
-#include "arm_math.h"
-#include "char_pattern.h"
+#include "Pattern/char_pattern.h"
 #include "GRU/gru_infer.h"
 
 // Tests

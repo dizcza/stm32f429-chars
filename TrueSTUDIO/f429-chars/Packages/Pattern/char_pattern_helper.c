@@ -5,9 +5,9 @@
  *      Author: dizcza
  */
 
-#include <char_pattern.h>
 #include <stdio.h>
 #include "stm32f429i_discovery_lcd.h"
+#include "char_pattern.h"
 #include "Preprocess/preprocess.h"
 
 void CharPattern_PrintResult(const CharPattern_PredictedInfo* resultInfo) {

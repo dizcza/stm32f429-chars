@@ -46,7 +46,7 @@
 #include "stm32f429i_discovery.h"
 /* Include SDRAM Driver */
 #include "stm32f429i_discovery_sdram.h"
-#include "../Utilities/Fonts/fonts.h"
+#include "Fonts/fonts.h"
 /* Include LCD component driver */
 #include "Components/ili9341/ili9341.h"
 

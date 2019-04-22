@@ -5,7 +5,6 @@
  *      Author: dizcza
  */
 
-#include "char_pattern.h"
 #include "math.h"
 #include "preprocess.h"
 
