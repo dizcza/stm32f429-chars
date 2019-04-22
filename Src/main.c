@@ -49,7 +49,6 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include <char_pattern.h>
 #include "main.h"
 #include "crc.h"
 #include "dma2d.h"
@@ -185,6 +184,8 @@ int main(void)
 
   sprintf((char*) message, "Draw a pattern");
   BSP_LCD_DisplayStringAtLine(0, message);
+  GRU_Init();
+  GRU_LogNetworkInfo();
 
   /* USER CODE END 2 */
 

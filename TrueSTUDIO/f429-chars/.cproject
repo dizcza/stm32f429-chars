@@ -55,8 +55,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/DTW}&quot;" />
 									<listOptionValue builtIn="false" value="../../../Middlewares/ST/AI/AI/data" />
 									<listOptionValue builtIn="false" value="../../../Middlewares/ST/AI/AI/include" />
-									<listOptionValue builtIn="false" value="../../../Drivers/CMSIS/DSP/Include" />
-								<listOptionValue builtIn="false" value="../../../Middlewares/ST/Application/SystemPerformance/Inc" /></option>
+									
+								<listOptionValue builtIn="false" value="../../../Middlewares/ST/Application/SystemPerformance/Inc" /><listOptionValue builtIn="false" value="../../../Drivers/CMSIS/DSP/Include" /></option>
 								<option id="com.atollic.truestudio.gcc.symbols.defined.1670122205" name="Defined symbols" superClass="com.atollic.truestudio.gcc.symbols.defined" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__weak=&quot;__attribute__((weak))&quot;" />
 									<listOptionValue builtIn="false" value="__packed=&quot;__attribute__((__packed__))&quot;" />
@@ -203,8 +203,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/DTW}&quot;" />
 									<listOptionValue builtIn="false" value="../../../Middlewares/ST/AI/AI/data" />
 									<listOptionValue builtIn="false" value="../../../Middlewares/ST/AI/AI/include" />
-									<listOptionValue builtIn="false" value="../../../Drivers/CMSIS/DSP/Include" />
-								<listOptionValue builtIn="false" value="../../../Middlewares/ST/Application/SystemPerformance/Inc" /></option>
+									
+								<listOptionValue builtIn="false" value="../../../Middlewares/ST/Application/SystemPerformance/Inc" /><listOptionValue builtIn="false" value="../../../Drivers/CMSIS/DSP/Include" /></option>
 								<option id="com.atollic.truestudio.gcc.symbols.defined.1670122205" name="Defined symbols" superClass="com.atollic.truestudio.gcc.symbols.defined" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__weak=&quot;__attribute__((weak))&quot;" />
 									<listOptionValue builtIn="false" value="__packed=&quot;__attribute__((__packed__))&quot;" />
