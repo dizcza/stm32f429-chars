@@ -9,9 +9,11 @@
 #ifndef CHAR_PATTERN_H_
 #define CHAR_PATTERN_H_
 
-#define PATTERN_SIZE 20
-
 #include <stdint.h>
+#include "grunet.h"
+
+#define PATTERN_SIZE (AI_GRUNET_IN_1_SIZE / 2)
+
 
 typedef struct CharPattern {
     float *xcoords, *ycoords;

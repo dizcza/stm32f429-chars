@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    grunet.h
   * @author  AST Embedded Analytics Research Platform
-  * @date    Mon Apr 22 19:53:39 2019
+  * @date    Tue Apr 23 17:52:33 2019
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
@@ -28,9 +28,9 @@
 
 #define AI_GRUNET_IN_NUM       (1)
 #define AI_GRUNET_IN_1  \
-  AI_BUFFER_OBJ_INIT(AI_BUFFER_FORMAT_FLOAT, 20, 1, 2, 1, NULL)
+  AI_BUFFER_OBJ_INIT(AI_BUFFER_FORMAT_FLOAT, 30, 1, 2, 1, NULL)
 #define AI_GRUNET_IN_1_SIZE \
-  (20 * 1 * 2)
+  (30 * 1 * 2)
 
 #define AI_GRUNET_OUT_NUM      (1)
 #define AI_GRUNET_OUT_1  \

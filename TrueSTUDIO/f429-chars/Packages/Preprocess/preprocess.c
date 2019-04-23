@@ -14,27 +14,19 @@
 static uint16_t m_buffer_reduced_x[PATTERN_SIZE];
 static uint16_t m_buffer_reduced_y[PATTERN_SIZE];
 
-const BBox CharPatterns_Box = { -1.f, -1.f, 1.f, 1.f };
+const BBox Preprocess_NormalizedBox = { -1.f, -1.f, 1.f, 1.f };
 
-static void GetBBox(const CharPattern* pattern, BBox* box) {
+void Preprocess_GetBBox(const CharPattern* pattern, BBox* box) {
 	float xmin = INFINITY, xmax = -INFINITY, ymin = INFINITY, ymax = -INFINITY;
 	float x, y;
 	uint32_t i;
 	for (i = 0; i < pattern->size; i++) {
 		x = pattern->xcoords[i];
 		y = pattern->ycoords[i];
-		if (x < xmin) {
-			xmin = x;
-		}
-		if (x > xmax) {
-			xmax = x;
-		}
-		if (y < ymin) {
-			ymin = y;
-		}
-		if (y > ymax) {
-			ymax = y;
-		}
+		xmin = fminf(x, xmin);
+		xmax = fmaxf(x, xmax);
+		ymin = fminf(y, ymin);
+		ymax = fmaxf(y, ymax);
 	}
 	box->xmin = xmin;
 	box->ymin = ymin;
@@ -47,7 +39,7 @@ static void GetBoxCenter(const BBox* box, float* xc, float* yc) {
 	*yc = 0.5f * (box->ymin + box->ymax);
 }
 
-static void GetBoxScale(const BBox *boxFrom, const BBox *boxTo,
+void Preprocess_GetBoxScale(const BBox *boxFrom, const BBox *boxTo,
 		float *scaleX, float *scaleY) {
 	*scaleX = (boxTo->xmax - boxTo->xmin) / (boxFrom->xmax - boxFrom->xmin);
 	*scaleY = (boxTo->ymax - boxTo->ymin) / (boxFrom->ymax - boxFrom->ymin);
@@ -77,11 +69,11 @@ static void ReduceTouches(const uint16_t* bufferX, const uint16_t* bufferY,
 
 void Preprocess_Normalize(CharPattern* sample) {
 	BBox boxSample;
-	GetBBox(sample, &boxSample);
+	Preprocess_GetBBox(sample, &boxSample);
 	float xc, yc, xc_normalized, yc_normalized, scale_x, scale_y;
 	GetBoxCenter(&boxSample, &xc, &yc);
-	GetBoxCenter(&CharPatterns_Box, &xc_normalized, &yc_normalized);
-	GetBoxScale(&boxSample, &CharPatterns_Box, &scale_x, &scale_y);
+	GetBoxCenter(&Preprocess_NormalizedBox, &xc_normalized, &yc_normalized);
+	Preprocess_GetBoxScale(&boxSample, &Preprocess_NormalizedBox, &scale_x, &scale_y);
 	uint32_t i;
 	for (i = 0; i < sample->size; i++) {
 		sample->xcoords[i] = xc_normalized + (sample->xcoords[i] - xc) * scale_x;
@@ -93,15 +85,15 @@ void Preprocess_NormalizeInverse(const CharPattern* sample, uint16_t* bufferX,
 		uint16_t* bufferY, const BBox* boxTo) {
 	float xc, yc, xc_normalized, yc_normalized, scale_x, scale_y;
 	GetBoxCenter(boxTo, &xc, &yc);
-	GetBoxCenter(&CharPatterns_Box, &xc_normalized, &yc_normalized);
-	GetBoxScale(&CharPatterns_Box, boxTo, &scale_x, &scale_y);
+	BBox box_sample;
+	Preprocess_GetBBox(sample, &box_sample);
+	GetBoxCenter(&box_sample, &xc_normalized, &yc_normalized);
+	Preprocess_GetBoxScale(&box_sample, boxTo, &scale_x, &scale_y);
 	uint32_t i;
 	float x_float, y_float;
 	for (i = 0; i < sample->size; i++) {
-		x_float = sample->xcoords[i];
-		y_float = sample->ycoords[i];
-		x_float = xc + (x_float - xc_normalized) * scale_x;
-		y_float = yc + (y_float - yc_normalized) * scale_y;
+		x_float = fmaxf(xc + (sample->xcoords[i] - xc_normalized) * scale_x, 0);
+		y_float = fmaxf(yc + (sample->ycoords[i] - yc_normalized) * scale_y, 0);
 		bufferX[i] = (uint16_t) x_float;
 		bufferY[i] = (uint16_t) y_float;
 	}
@@ -140,7 +132,7 @@ void Preprocess_ToFloat(const uint16_t* bufferX, const uint16_t* bufferY, CharPa
 	}
 }
 
-void Preprocess_MakePattern(uint16_t* bufferX, uint16_t* bufferY,
+void Preprocess_MakePattern(const uint16_t* bufferX, const uint16_t* bufferY,
 		uint32_t bufferSize, CharPattern* sample) {
 	if (bufferSize < 2) {
 		return;  // not enough points

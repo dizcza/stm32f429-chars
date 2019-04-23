@@ -317,6 +317,62 @@
 			<location>PARENT-2-PROJECT_LOC/Drivers/CMSIS/DSP/Source/BasicMathFunctions/arm_dot_prod_f32.c</location>
 		</link>
 	<link>
+			
+			<type>2</type>
+			
+		</link><link>
+			
+			<type>2</type>
+			
+		</link><link>
+			
+			<type>2</type>
+			
+		</link><link>
+			
+			<type>2</type>
+			
+		</link><link>
+			
+			<type>2</type>
+			
+		</link><link>
+			
+			<type>2</type>
+			
+		</link><link>
+			
+			<type>2</type>
+			
+		</link><link>
+			
+			<type>2</type>
+			
+		</link><link>
+			
+			<type>2</type>
+			
+		</link><link>
+			
+			<type>2</type>
+			
+		</link><link>
+			<name>Middlewares/ST/AI/AI/data</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link><link>
+			<name>Middlewares/ST/AI/AI/data/grunet_data.c</name>
+			<type>1</type>
+			<location>PARENT-2-PROJECT_LOC/Middlewares/ST/AI/AI/data/grunet_data.c</location>
+		</link><link>
+			
+			<type>2</type>
+			
+		</link><link>
+			<name>Middlewares/ST/AI/AI/src/grunet.c</name>
+			<type>1</type>
+			<location>PARENT-2-PROJECT_LOC/Middlewares/ST/AI/AI/src/grunet.c</location>
+		</link><link>
 			<name>Application</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -337,18 +393,6 @@
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link><link>
-			<name>Middlewares/X-CUBE-AI</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link><link>
-			<name>Middlewares/X-CUBE-AI/Artificial Intelligence/Application/SystemPerformance</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link><link>
-			<name>Middlewares/X-CUBE-AI/Artificial Intelligence/Application/SystemPerformance/aiSystemPerformance.c</name>
-			<type>1</type>
-			<location>PARENT-2-PROJECT_LOC/Middlewares/ST/Application/SystemPerformance/Src/aiSystemPerformance.c</location>
-		</link><link>
 			<name>Middlewares/ST</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -361,20 +405,8 @@
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link><link>
-			<name>Middlewares/ST/AI/AI/data</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link><link>
-			<name>Middlewares/ST/AI/AI/data/grunet_data.c</name>
-			<type>1</type>
-			<location>PARENT-2-PROJECT_LOC/Middlewares/ST/AI/AI/data/grunet_data.c</location>
-		</link><link>
 			<name>Middlewares/ST/AI/AI/src</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
-		</link><link>
-			<name>Middlewares/ST/AI/AI/src/grunet.c</name>
-			<type>1</type>
-			<location>PARENT-2-PROJECT_LOC/Middlewares/ST/AI/AI/src/grunet.c</location>
 		</link></linkedResources>
 </projectDescription>

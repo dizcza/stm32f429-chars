@@ -164,6 +164,7 @@ int main(void)
   BSP_LCD_SetFont(&Font16);
 
   Test_Preprocess_CorrectSlant();
+  Test_Preprocess_Normalize();
 //  Test_ArmAdd32();
 //  HAL_Delay(1000);
 
@@ -202,7 +203,7 @@ int main(void)
 		  uint32_t n_touches = TS_Capture_GetNumOfTouches();
 		  if (n_touches > 2) {
 			  Preprocess_MakePattern(TS_Capture_TouchesX, TS_Capture_TouchesY, n_touches, &sample);
-			  CharPattern_Draw(&sample);
+//			  CharPattern_Draw(&sample);
 			  GRU_Infer(&sample, &result_info);
 			  BSP_LCD_Clear(LCD_COLOR_BLACK);
 			  CharPattern_PrintResult(&result_info);

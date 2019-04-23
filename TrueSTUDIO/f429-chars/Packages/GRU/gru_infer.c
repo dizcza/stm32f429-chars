@@ -62,9 +62,9 @@ void GRU_LogError(ai_error err, char* title) {
 }
 
 ai_error GRU_Infer(const CharPattern* sample, CharPattern_PredictedInfo* resultInfo) {
-	assert_param(sample->size == PATTERN_SIZE);
-	assert_param(2 * PATTERN_SIZE == AI_GRUNET_IN_1_SIZE);
-	uint32_t i;
+	assert_param(2 * sample->size == AI_GRUNET_IN_1_SIZE);
+	uint32_t i, start;
+	start = HAL_GetTick();
 	for (i = 0; i < sample->size; i++) {
 		m_input_data[2 * i] = sample->xcoords[i];
 		m_input_data[2 * i + 1] = sample->ycoords[i];
@@ -85,14 +85,16 @@ ai_error GRU_Infer(const CharPattern* sample, CharPattern_PredictedInfo* resultI
 		return err;
 	}
 
-	float* output = (float*) ai_output.data;
+	float* proba_softmax = (float*) ai_output.data;
 	uint32_t argmax = 0;
 	for (i = 1; i < AI_GRUNET_OUT_1_SIZE; i++) {
-		if (output[i] > output[argmax]) {
+		if (proba_softmax[i] > proba_softmax[argmax]) {
 			argmax = i;
 		}
 	}
 	resultInfo->predicted_char = (char) ('a' + argmax);
+	resultInfo->probability = proba_softmax[argmax];
+	resultInfo->duration = HAL_GetTick() - start;
 
 	return err;
 }

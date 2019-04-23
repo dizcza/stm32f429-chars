@@ -12,10 +12,11 @@
 
 void CharPattern_PrintResult(const CharPattern_PredictedInfo* resultInfo) {
 	uint8_t message[20];
-	uint16_t start_line = 1;
+	uint16_t start_line = 0;
+	const float fps = 1000.f / resultInfo->duration;
 	sprintf((char*) message, "You wrote: %c", (char) resultInfo->predicted_char);
-	BSP_LCD_DisplayStringAtLine(0, message);
-	sprintf((char*) message, "Duration: %lu ms", resultInfo->duration);
+	BSP_LCD_DisplayStringAtLine(start_line++, message);
+	sprintf((char*) message, "FPS: %.2f", fps);
 	BSP_LCD_DisplayStringAtLine(start_line++, message);
 	sprintf((char*) message, "Probability: %.5f", resultInfo->probability);
 	BSP_LCD_DisplayStringAtLine(start_line++, message);

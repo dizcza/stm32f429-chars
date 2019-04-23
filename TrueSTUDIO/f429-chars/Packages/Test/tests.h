@@ -8,15 +8,17 @@
 #ifndef TEST_TESTS_H_
 #define TEST_TESTS_H_
 
-#include "arm_math.h"
+#define TEST_EPS (1e-5)
 
-#define TEST_EPS (1e-6)
-#define TEST_VERBOSE  // uncomment to enable verbose tests
+#include "math.h"
 
+__STATIC_INLINE void assert_close(float a, float b) {
+	assert_param(fabsf(a - b) < TEST_EPS);
+}
 
-void Test_AllClose(const float *arr1, const float *arr2, uint32_t size);
 void Test_ArmAdd32();
 void Test_Preprocess_CorrectSlant();
+void Test_Preprocess_Normalize();
 void Test_ShearTransformUI();
 
 #endif /* TEST_TESTS_H_ */
