@@ -192,7 +192,6 @@ int main(void)
   GRU_Init();
   GRU_LogNetworkInfo();
   BSP_LCD_DisplayStringAtLine(0, (uint8_t*) "Draw [a-z] char");
-  assert_param(0);
 
   /* USER CODE END 2 */
 
