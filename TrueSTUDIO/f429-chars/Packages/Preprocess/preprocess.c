@@ -34,7 +34,7 @@ void Preprocess_GetBBox(const CharPattern* pattern, BBox* box) {
 	box->ymax = ymax;
 }
 
-static void GetBoxCenter(const BBox* box, float* xc, float* yc) {
+void Preprocess_GetBoxCenter(const BBox* box, float* xc, float* yc) {
 	*xc = 0.5f * (box->xmin + box->xmax);
 	*yc = 0.5f * (box->ymin + box->ymax);
 }
@@ -50,9 +50,8 @@ void Preprocess_GetBoxScale(const BBox *boxFrom, const BBox *boxTo,
 #endif  /* PREPROCESS_KEEP_ASPECT_RATIO */
 }
 
-static void ReduceTouches(const uint16_t* bufferX, const uint16_t* bufferY,
+static void MakeBufferFixedSize(const uint16_t* bufferX, const uint16_t* bufferY,
 		uint32_t bufferSize) {
-	// reduce to one size
 	const float step = bufferSize * 1.0f / PATTERN_SIZE;
 	float accumulated = 0.f;
 	int32_t id_raw, id_reduced;
@@ -71,8 +70,8 @@ void Preprocess_Normalize(CharPattern* sample) {
 	BBox boxSample;
 	Preprocess_GetBBox(sample, &boxSample);
 	float xc, yc, xc_normalized, yc_normalized, scale_x, scale_y;
-	GetBoxCenter(&boxSample, &xc, &yc);
-	GetBoxCenter(&Preprocess_NormalizedBox, &xc_normalized, &yc_normalized);
+	Preprocess_GetBoxCenter(&boxSample, &xc, &yc);
+	Preprocess_GetBoxCenter(&Preprocess_NormalizedBox, &xc_normalized, &yc_normalized);
 	Preprocess_GetBoxScale(&boxSample, &Preprocess_NormalizedBox, &scale_x, &scale_y);
 	uint32_t i;
 	for (i = 0; i < sample->size; i++) {
@@ -83,17 +82,17 @@ void Preprocess_Normalize(CharPattern* sample) {
 
 void Preprocess_NormalizeInverse(const CharPattern* sample, uint16_t* bufferX,
 		uint16_t* bufferY, const BBox* boxTo) {
-	float xc, yc, xc_normalized, yc_normalized, scale_x, scale_y;
-	GetBoxCenter(boxTo, &xc, &yc);
-	BBox box_sample;
-	Preprocess_GetBBox(sample, &box_sample);
-	GetBoxCenter(&box_sample, &xc_normalized, &yc_normalized);
-	Preprocess_GetBoxScale(&box_sample, boxTo, &scale_x, &scale_y);
+	float xc_screen, yc_screen, xc_pattern, yc_pattern, scale_x, scale_y;
+	Preprocess_GetBoxCenter(boxTo, &xc_screen, &yc_screen);
+	BBox box_pattern;
+	Preprocess_GetBBox(sample, &box_pattern);
+	Preprocess_GetBoxCenter(&box_pattern, &xc_pattern, &yc_pattern);
+	Preprocess_GetBoxScale(&box_pattern, boxTo, &scale_x, &scale_y);
 	uint32_t i;
 	float x_float, y_float;
 	for (i = 0; i < sample->size; i++) {
-		x_float = fmaxf(xc + (sample->xcoords[i] - xc_normalized) * scale_x, 0);
-		y_float = fmaxf(yc + (sample->ycoords[i] - yc_normalized) * scale_y, 0);
+		x_float = fmaxf(xc_screen + (sample->xcoords[i] - xc_pattern) * scale_x, 0);
+		y_float = fmaxf(yc_screen + (sample->ycoords[i] - yc_pattern) * scale_y, 0);
 		bufferX[i] = (uint16_t) x_float;
 		bufferY[i] = (uint16_t) y_float;
 	}
@@ -120,7 +119,7 @@ void Preprocess_CorrectSlant(CharPattern* pattern) {
 	}
 	const float shear = dx_slant * (-1.f) / dy_slant;
 	for (i = 0; i < pattern->size; i++) {
-		pattern->xcoords[i] = fmaxf(pattern->xcoords[i] + pattern->ycoords[i] * shear, 0.f);
+		pattern->xcoords[i] = pattern->xcoords[i] + pattern->ycoords[i] * shear;
 	}
 }
 
@@ -138,7 +137,7 @@ void Preprocess_MakePattern(const uint16_t* bufferX, const uint16_t* bufferY,
 		return;  // not enough points
 	}
 	// reduce to one size
-	ReduceTouches(bufferX, bufferY, bufferSize);
+	MakeBufferFixedSize(bufferX, bufferY, bufferSize);
 	sample->size = PATTERN_SIZE;
 	Preprocess_ToFloat(m_buffer_reduced_x, m_buffer_reduced_y, sample);
 	Preprocess_CorrectSlant(sample);

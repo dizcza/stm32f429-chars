@@ -23,7 +23,7 @@ typedef struct CharPattern {
 typedef struct CharPattern_PredictedInfo {
     char predicted_char;
     uint32_t duration;
-    float probability;
+    float confidence;
 } CharPattern_PredictedInfo;
 
 void CharPattern_PrintResult(const CharPattern_PredictedInfo* resultInfo);

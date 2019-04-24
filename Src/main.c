@@ -73,6 +73,7 @@
 #include "Preprocess/preprocess.h"
 #include "Pattern/char_pattern.h"
 #include "GRU/gru_infer.h"
+#include "Log/lcd_log.h"
 
 // Tests
 #include "Test/tests.h"
@@ -155,26 +156,32 @@ int main(void)
 
   /* Initialize the LCD Layers and Touch Screen */
   BSP_LCD_LayerDefaultInit(1, LCD_FRAME_BUFFER);
-  BSP_LCD_SelectLayer(1);
-  BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
+  BSP_LCD_LayerDefaultInit(0, LCD_FRAME_BUFFER + BUFFER_OFFSET);
 
+  BSP_LCD_SelectLayer(LCD_BACKGROUND_LAYER);
+  BSP_LCD_Clear(LCD_COLOR_BLACK);
+  BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
+  BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
+  BSP_LCD_SetFont(&Font12);
+
+  BSP_LCD_SelectLayer(LCD_FOREGROUND_LAYER);
   BSP_LCD_Clear(LCD_COLOR_BLACK);
   BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
   BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
   BSP_LCD_SetFont(&Font16);
 
+  LCD_LOG_Init();
+
+  BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
+
   Test_Preprocess_CorrectSlant();
   Test_Preprocess_Normalize();
-//  Test_ArmAdd32();
-//  HAL_Delay(1000);
-
 //  Test_ShearTransformUI();
 
   BSP_LCD_Clear(LCD_COLOR_BLACK);
 
   TS_StateTypeDef ts_state;
   uint32_t tick, last_touch = 0;
-  uint8_t message[20];
 
   /* Processed touches */
   float touches_x[PATTERN_SIZE];
@@ -182,10 +189,10 @@ int main(void)
   CharPattern sample = {touches_x, touches_y, PATTERN_SIZE};
   CharPattern_PredictedInfo result_info;
 
-  sprintf((char*) message, "Draw a pattern");
-  BSP_LCD_DisplayStringAtLine(0, message);
   GRU_Init();
   GRU_LogNetworkInfo();
+  BSP_LCD_DisplayStringAtLine(0, (uint8_t*) "Draw [a-z] char");
+  assert_param(0);
 
   /* USER CODE END 2 */
 
@@ -326,14 +333,7 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-	BSP_LCD_SetFont(&Font12);
-	uint8_t assert_msg[32];
-	sprintf((char*) assert_msg, "Failed at line %lu", line);
-	sFONT *font = BSP_LCD_GetFont();
-	uint32_t n_lines = BSP_LCD_GetYSize() * 1.f / font->Height;
-	BSP_LCD_DisplayStringAtLine(n_lines - 2, file);
-	BSP_LCD_DisplayStringAtLine(n_lines - 1, assert_msg);
-	BSP_LCD_SetFont(&Font16);
+	LCD_ErrLog("Assert failed: %s, line %lu\n", file, line);
     HAL_GPIO_WritePin(GPIOG, GPIO_PIN_14, GPIO_PIN_SET);
   /* USER CODE END 6 */
 }

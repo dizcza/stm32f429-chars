@@ -31,9 +31,6 @@ void Test_ShearTransformUI() {
 	BSP_LCD_DisplayStringAtLine(0, message);
 
 	while (1) {
-		if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == 1) {
-			break;
-		}
 		BSP_TS_GetState(&ts_state);
 		TS_Capture_SaveTouch(&ts_state);
 		tick = HAL_GetTick();
@@ -46,17 +43,11 @@ void Test_ShearTransformUI() {
 				pattern.size = n_touches;
 				Preprocess_ToFloat(TS_Capture_TouchesX, TS_Capture_TouchesY, &pattern);
 				Preprocess_CorrectSlant(&pattern);
-				BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
-				TS_Capture_DrawAllStrokes();
-				BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
-
+				CharPattern_Draw(&pattern);
 				HAL_Delay(2000);
 				TS_Capture_Reset();
 				BSP_LCD_Clear(LCD_COLOR_BLACK);
 			}
 		}
 	}
-
-	TS_Capture_Reset();
-	BSP_LCD_Clear(LCD_COLOR_BLACK);
 }

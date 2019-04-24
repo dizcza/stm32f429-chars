@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    grunet.c
   * @author  AST Embedded Analytics Research Platform
-  * @date    Tue Apr 23 17:52:33 2019
+  * @date    Wed Apr 24 11:44:27 2019
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
@@ -53,7 +53,7 @@
 #endif
 
 #undef AI_TOOLS_DATE_TIME
-#define AI_TOOLS_DATE_TIME   "Tue Apr 23 17:52:33 2019"
+#define AI_TOOLS_DATE_TIME   "Wed Apr 24 11:44:27 2019"
 
 #undef AI_TOOLS_COMPILE_TIME
 #define AI_TOOLS_COMPILE_TIME    __DATE__ " " __TIME__
@@ -214,14 +214,14 @@ AI_LAYER_OBJ_DECLARE(
 
 /* Weight tensor #1 */
 AI_ARRAY_OBJ_DECLARE(
-  dense_1_weights_array, AI_DATA_FORMAT_LUT8_FLOAT, 
+  dense_1_weights_array, AI_DATA_FORMAT_FLOAT, 
   NULL, NULL, 2600,
   AI_STATIC)
 
 AI_TENSOR_OBJ_DECLARE(
   dense_1_weights,
   AI_SHAPE_INIT(1, 1, 26, 100),
-  AI_STRIDE_INIT(2600, 2600, 100, 1),
+  AI_STRIDE_INIT(10400, 10400, 400, 4),
   &dense_1_weights_array,
   AI_STATIC)
 
@@ -279,7 +279,7 @@ AI_LAYER_OBJ_DECLARE(
 AI_NETWORK_OBJ_DECLARE(
   AI_NET_OBJ_INSTANCE,
   AI_BUFFER_OBJ_INIT(AI_BUFFER_FORMAT_U8,
-                     1, 1, 127328, 1,
+                     1, 1, 134104, 1,
                      NULL),
   AI_BUFFER_OBJ_INIT(AI_BUFFER_FORMAT_U8,
                      1, 1, 508, 1,
@@ -335,10 +335,10 @@ ai_bool grunet_configure_weights(
   gru_1_bias_array.data_start = weights + 122400;
   dense_1_weights_array.format |= AI_FMT_FLAG_CONST;
   dense_1_weights_array.data = weights + 123600;
-  dense_1_weights_array.data_start = weights + 126200;
+  dense_1_weights_array.data_start = weights + 123600;
   dense_1_bias_array.format |= AI_FMT_FLAG_CONST;
-  dense_1_bias_array.data = weights + 127224;
-  dense_1_bias_array.data_start = weights + 127224;
+  dense_1_bias_array.data = weights + 134000;
+  dense_1_bias_array.data_start = weights + 134000;
   
   }
 

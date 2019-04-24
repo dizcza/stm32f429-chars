@@ -13,6 +13,7 @@
 
 ai_error GRU_Init();
 ai_error GRU_Infer(const CharPattern* sample, CharPattern_PredictedInfo* resultInfo);
+ai_error GRU_GetError();
 void GRU_LogError(ai_error err, char* message);
 void GRU_LogNetworkInfo();
 
