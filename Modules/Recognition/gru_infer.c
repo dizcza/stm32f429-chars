@@ -137,10 +137,10 @@ void GRU_LogNetworkInfo() {
 		printf("  nodes: %ld\n", report.n_nodes);
 		printf("  complexity: %ld MACC\n", report.n_macc);
 		printf("  activation: %ld bytes\n", GetBufferSize(&report.activations));
-		printf("  weights: %ld bytes\n", GetBufferSize(&report.weights));
+		printf("  params: %ld bytes\n", GetBufferSize(&report.params));
 		printf("  inputs/outputs: %u/%u\n", report.n_inputs, report.n_outputs);
-		PrintLayoutBuffer("  IN tensor format:", &report.inputs);
-		PrintLayoutBuffer("  OUT tensor format:", &report.outputs);
+		PrintLayoutBuffer("  IN tensor format:", report.inputs);
+		PrintLayoutBuffer("  OUT tensor format:", report.outputs);
 		LCD_LineColor = LCD_COLOR_DARKBLUE;
 		BSP_LCD_SelectLayer(LCD_FOREGROUND_LAYER);
 	} else {

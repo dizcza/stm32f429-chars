@@ -1,3 +1,4 @@
+
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __CONSTANTS_H
 #define __CONSTANTS_H
@@ -52,8 +53,7 @@
   ******************************************************************************
   */
 /* Constants definitions ------------------------------------------------------------------*/
-#define MIN_HEAP_SIZE 0x800
-#define MIN_STACK_SIZE 0x400
+
 #ifdef __cplusplus
 }
 #endif

@@ -39,7 +39,7 @@ Pretrained model dir: [models](models)
 
 [X-CUBE-AI](https://www.st.com/en/embedded-software/x-cube-ai.html)
 
-Usage: [GRU inference](TrueSTUDIO/f429-chars/Packages/GRU)
+Usage: [GRU inference](Modules/Recognition/gru_infer.h)
 
 ![cube-ai](screenshots/grunet_cubeai_modelconf.png)
 
