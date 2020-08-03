@@ -9,7 +9,7 @@
 #include <math.h>
 #include "stm32f429i_discovery_lcd.h"
 #include "char_pattern.h"
-#include "Preprocess/preprocess.h"
+#include "preprocess.h"
 
 typedef struct Point_u16 {
 	uint16_t x, y;

@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    grunet_data.h
   * @author  AST Embedded Analytics Research Platform
-  * @date    Wed Apr 24 11:44:27 2019
+  * @date    Mon Aug  3 21:29:43 2020
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention

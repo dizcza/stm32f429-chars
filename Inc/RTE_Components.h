@@ -1,12 +1,12 @@
 /**
   ******************************************************************************
-  * @file    
+  * @file
   * @author  MCD Application Team
   * @version V2.0.0
   ******************************************************************************
   * @attention
   *
-  * COPYRIGHT(c) 2019 STMicroelectronics
+  * COPYRIGHT(c) 2020 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -33,9 +33,10 @@
   */
   /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef  __RTE_COMPONENTS_H__
-#define  __RTE_COMPONENTS_H__ 
+#define  __RTE_COMPONENTS_H__
 
 /* Defines ------------------------------------------------------------------*/
-#define AI_ApplicationTemplate 
- 
+/* STMicroelectronics.X-CUBE-AI.3.4.0 */
+#define AI_ApplicationTemplate
+
 #endif /* __RTE_COMPONENTS_H__ */

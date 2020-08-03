@@ -10,7 +10,7 @@
 
 #define PREPROCESS_KEEP_ASPECT_RATIO  1U
 
-#include "Pattern/char_pattern.h"
+#include "char_pattern.h"
 
 typedef struct BBox {
 	float xmin, ymin, xmax, ymax;

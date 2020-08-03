@@ -8,7 +8,7 @@
 #ifndef GRU_GRU_INFER_H_
 #define GRU_GRU_INFER_H_
 
-#include "Pattern/char_pattern.h"
+#include "char_pattern.h"
 #include "grunet.h"
 
 ai_error GRU_Init();

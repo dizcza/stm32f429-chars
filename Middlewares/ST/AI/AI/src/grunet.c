@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    grunet.c
   * @author  AST Embedded Analytics Research Platform
-  * @date    Wed Apr 24 11:44:27 2019
+  * @date    Mon Aug  3 21:29:43 2020
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
@@ -53,7 +53,7 @@
 #endif
 
 #undef AI_TOOLS_DATE_TIME
-#define AI_TOOLS_DATE_TIME   "Wed Apr 24 11:44:27 2019"
+#define AI_TOOLS_DATE_TIME   "Mon Aug  3 21:29:43 2020"
 
 #undef AI_TOOLS_COMPILE_TIME
 #define AI_TOOLS_COMPILE_TIME    __DATE__ " " __TIME__

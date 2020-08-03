@@ -8,8 +8,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "stm32f4xx_hal.h"
-#include "Test/tests.h"
-#include "Preprocess/preprocess.h"
+#include "tests.h"
+#include "preprocess.h"
 
 #define TEST_PREPROCESS_BUFFER_SIZE  20
 
