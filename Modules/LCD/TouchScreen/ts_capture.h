@@ -32,7 +32,4 @@ void TS_Capture_DrawAllStrokes();
 uint32_t TS_Capture_GetNumOfTouches();
 void TS_Capture_Reset();
 
-/* Helpers */
-void TS_Capture_PrintInfoLCD(uint16_t startLine);
-
 #endif /* TOUCHSCREEN_TS_CAPTURE_H_ */

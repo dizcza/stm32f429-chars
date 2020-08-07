@@ -72,15 +72,6 @@ uint32_t TS_Capture_GetNumOfTouches() {
 	return (uint32_t) (m_touch_id + 1);
 }
 
-void TS_Capture_PrintInfoLCD(uint16_t startLine) {
-	uint32_t n_touches = TS_Capture_GetNumOfTouches();
-	uint8_t message[20];
-	sprintf((char*) message, "[TS] %lu calls", m_calls);
-	BSP_LCD_DisplayStringAtLine(startLine++, message);
-	sprintf((char*) message, "[TS] %lu touches", n_touches);
-	BSP_LCD_DisplayStringAtLine(startLine++, message);
-}
-
 void TS_Capture_Reset() {
 	m_touch_id = -1;
 	m_finished = -1;
