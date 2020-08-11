@@ -42,8 +42,8 @@
 #include "char_pattern.h"
 #include "gru_infer.h"
 #include "Log/lcd_log.h"
+#include "test/tests_recognition.h"
 
-#include "test/tests.h"
 
 /* USER CODE END Includes */
 
@@ -70,12 +70,46 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void BSP_Init_Board();
+void Test_Recognition();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void BSP_Init_Board() {
+	/* Initialize the LCD */
+	BSP_LCD_Init();
 
+	/* Initialize the LCD Layers and Touch Screen */
+	BSP_LCD_LayerDefaultInit(1, LCD_FRAME_BUFFER);
+	BSP_LCD_LayerDefaultInit(0, LCD_FRAME_BUFFER + BUFFER_OFFSET);
+
+	BSP_LCD_SelectLayer(LCD_BACKGROUND_LAYER);
+	BSP_LCD_Clear(LCD_COLOR_BLACK);
+	BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
+	BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
+	BSP_LCD_SetFont(&Font12);
+
+	BSP_LCD_SelectLayer(LCD_FOREGROUND_LAYER);
+	BSP_LCD_Clear(LCD_COLOR_BLACK);
+	BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
+	BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
+	BSP_LCD_SetFont(&Font16);
+
+	LCD_LOG_Init();
+
+	BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
+
+	BSP_LCD_Clear(LCD_COLOR_BLACK);
+}
+
+
+void Test_Recognition() {
+	Test_Preprocess_CorrectSlant();
+	Test_Preprocess_Normalize();
+	Test_GRU(GRU_NetwokHandle());
+//    Test_ShearTransformUI();
+}
 /* USER CODE END 0 */
 
 /**
@@ -114,36 +148,7 @@ int main(void)
   MX_CRC_Init();
   MX_X_CUBE_AI_Init();
   /* USER CODE BEGIN 2 */
-
-  /*##-1- Initialize the LCD #################################################*/
-  /* Initialize the LCD */
-  BSP_LCD_Init();
-
-  /* Initialize the LCD Layers and Touch Screen */
-  BSP_LCD_LayerDefaultInit(1, LCD_FRAME_BUFFER);
-  BSP_LCD_LayerDefaultInit(0, LCD_FRAME_BUFFER + BUFFER_OFFSET);
-
-  BSP_LCD_SelectLayer(LCD_BACKGROUND_LAYER);
-  BSP_LCD_Clear(LCD_COLOR_BLACK);
-  BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
-  BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
-  BSP_LCD_SetFont(&Font12);
-
-  BSP_LCD_SelectLayer(LCD_FOREGROUND_LAYER);
-  BSP_LCD_Clear(LCD_COLOR_BLACK);
-  BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
-  BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
-  BSP_LCD_SetFont(&Font16);
-
-  LCD_LOG_Init();
-
-  BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
-
-  Test_Preprocess_CorrectSlant();
-  Test_Preprocess_Normalize();
-//  Test_ShearTransformUI();
-
-  BSP_LCD_Clear(LCD_COLOR_BLACK);
+  BSP_Init_Board();
 
   TS_StateTypeDef ts_state;
   uint32_t tick, last_touch = 0;
@@ -154,8 +159,12 @@ int main(void)
   CharPattern sample = {touches_x, touches_y, PATTERN_SIZE};
   CharPattern_PredictedInfo result_info;
 
-  GRU_Init();
+  ai_error err = GRU_Init();
+  assert_param(err.code == AI_ERROR_CODE_NONE);
   GRU_LogNetworkInfo();
+
+  Test_Recognition();
+
   BSP_LCD_DisplayStringAtLine(0, (uint8_t*) "Draw [a-z] char");
 
   /* USER CODE END 2 */
@@ -174,7 +183,10 @@ int main(void)
 		  uint32_t n_touches = TS_Capture_GetNumOfTouches();
 		  if (n_touches > 2) {
 			  Preprocess_MakePattern(TS_Capture_TouchesX, TS_Capture_TouchesY, n_touches, &sample);
-//			  CharPattern_Draw(&sample);
+
+			  // uncomment to see the preprocessed sample
+			  // CharPattern_Draw(&sample);
+
 			  GRU_Infer(&sample, &result_info);
 			  BSP_LCD_Clear(LCD_COLOR_BLACK);
 			  CharPattern_PrintResult(&result_info);
@@ -300,7 +312,6 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
 	LCD_ErrLog("Assert failed: %s, line %lu\n", file, line);
-    HAL_GPIO_WritePin(GPIOG, GPIO_PIN_14, GPIO_PIN_SET);
     Error_Handler();
   /* USER CODE END 6 */
 }

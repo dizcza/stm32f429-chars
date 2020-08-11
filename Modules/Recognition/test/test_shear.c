@@ -10,7 +10,7 @@
 #include "stm32f429i_discovery_lcd.h"
 #include "stm32f429i_discovery_ts.h"
 
-#include "tests.h"
+#include "tests_recognition.h"
 #include "preprocess.h"
 #include "TouchScreen/ts_capture.h"
 

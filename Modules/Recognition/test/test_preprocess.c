@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "stm32f4xx_hal.h"
-#include "tests.h"
+#include "tests_recognition.h"
 #include "preprocess.h"
 
 #define TEST_PREPROCESS_BUFFER_SIZE  20
@@ -20,9 +20,9 @@ static void AssertVerticalLine(float *xs, float *ys, uint32_t size) {
 	const float dy0 = ys[1] - ys[0];
 	assert_param(fabsf(dy0) > TEST_EPS);  // dy0 != 0
 	for (i = 1; i < size; i++) {
-		assert_close(xs[i], x0);
+		assert_isclose(xs[i], x0);
 		dy = ys[i] - ys[i - 1];
-		assert_close(dy, dy0);
+		assert_isclose(dy, dy0);
 	}
 }
 
@@ -33,9 +33,9 @@ static void AssertHorizontalLine(float *xs, float *ys, uint32_t size) {
 	const float dx0 = xs[1] - xs[0];
 	assert_param(fabsf(dx0) > TEST_EPS);  // dx0 != 0
 	for (i = 1; i < size; i++) {
-		assert_close(ys[i], y0);
+		assert_isclose(ys[i], y0);
 		dx = xs[i] - xs[i - 1];
-		assert_close(dx, dx0);
+		assert_isclose(dx, dx0);
 	}
 }
 
@@ -89,20 +89,20 @@ void Test_Preprocess_Normalize() {
 	float scale_x = (box.xmax - box.xmin) / (Preprocess_NormalizedBox.xmax - Preprocess_NormalizedBox.xmin);
 	float scale_y = (box.ymax - box.ymin) / (Preprocess_NormalizedBox.ymax - Preprocess_NormalizedBox.ymin);
 	if (scale_x > scale_y) {
-		assert_close(box.xmin, Preprocess_NormalizedBox.xmin);
-		assert_close(box.xmax, Preprocess_NormalizedBox.xmax);
+		assert_isclose(box.xmin, Preprocess_NormalizedBox.xmin);
+		assert_isclose(box.xmax, Preprocess_NormalizedBox.xmax);
 		assert_param(box.ymin - Preprocess_NormalizedBox.ymin >= TEST_EPS);
 		assert_param(box.ymax - Preprocess_NormalizedBox.ymax <= TEST_EPS);
 	} else {
-		assert_close(box.ymin, Preprocess_NormalizedBox.ymin);
-		assert_close(box.ymax, Preprocess_NormalizedBox.ymax);
+		assert_isclose(box.ymin, Preprocess_NormalizedBox.ymin);
+		assert_isclose(box.ymax, Preprocess_NormalizedBox.ymax);
 		assert_param(box.xmin - Preprocess_NormalizedBox.xmin >= TEST_EPS);
 		assert_param(box.xmax - Preprocess_NormalizedBox.xmax <= TEST_EPS);
 	}
 #else
-	assert_close(box.xmin, Preprocess_NormalizedBox.xmin);
-	assert_close(box.xmax, Preprocess_NormalizedBox.xmax);
-	assert_close(box.ymin, Preprocess_NormalizedBox.ymin);
-	assert_close(box.ymax, Preprocess_NormalizedBox.ymax);
+	assert_isclose(box.xmin, Preprocess_NormalizedBox.xmin);
+	assert_isclose(box.xmax, Preprocess_NormalizedBox.xmax);
+	assert_isclose(box.ymin, Preprocess_NormalizedBox.ymin);
+	assert_isclose(box.ymax, Preprocess_NormalizedBox.ymax);
 #endif  /* PREPROCESS_KEEP_ASPECT_RATIO */
 }
