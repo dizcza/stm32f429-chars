@@ -13,6 +13,9 @@ static int32_t m_finished = -1;  // previous stroke last point
 static int32_t m_touch_id = -1;  // current touch id
 static uint32_t m_last_touch_tick = 0;
 
+uint16_t TS_Capture_TouchesX[TS_CAPTURE_CACHE_SIZE];
+uint16_t TS_Capture_TouchesY[TS_CAPTURE_CACHE_SIZE];
+
 /* Debug information */
 static uint32_t m_calls = 0;  // num of save touch calls
 

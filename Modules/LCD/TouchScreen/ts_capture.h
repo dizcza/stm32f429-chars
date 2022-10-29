@@ -22,8 +22,8 @@ typedef enum {
 } TS_Capture_SaveTouchDef;
 
 /* Raw touches */
-uint16_t TS_Capture_TouchesX[TS_CAPTURE_CACHE_SIZE];
-uint16_t TS_Capture_TouchesY[TS_CAPTURE_CACHE_SIZE];
+extern uint16_t TS_Capture_TouchesX[TS_CAPTURE_CACHE_SIZE];
+extern uint16_t TS_Capture_TouchesY[TS_CAPTURE_CACHE_SIZE];
 
 void TS_Capture_Init();
 TS_Capture_SaveTouchDef TS_Capture_SaveTouch(const TS_StateTypeDef *TsState);
