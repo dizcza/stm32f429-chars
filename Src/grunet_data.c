@@ -1,10 +1,29 @@
+/**
+******************************************************************************
+* @file    grunet_data.c
+* @author  AST Embedded Analytics Research Platform
+* @date    Sun Oct 30 22:26:01 2022
+* @brief   AI Tool Automatic Code Generator for Embedded NN computing
+******************************************************************************
+* @attention
+*
+* Copyright (c) 2022 STMicroelectronics.
+* All rights reserved.
+*
+* This software component is licensed by ST under Ultimate Liberty license
+* SLA0044, the "License"; You may not use this file except in compliance with
+* the License. You may obtain a copy of the License at:
+*                             www.st.com/SLA0044
+*
+******************************************************************************
+*/
+
 #include "grunet_data.h"
 
 ai_handle ai_grunet_data_weights_get(void)
 {
-
-  AI_ALIGNED(4)
-  static const ai_u8 s_grunet_weights[ 134104 ] = {
+  AI_ALIGNED(32)
+  static const ai_u8 s_grunet_weights[134104] = {
     0x00, 0x2f, 0x97, 0x3e, 0x18, 0x08, 0x5d, 0xbe, 0xe0, 0xe2,
     0x54, 0xbe, 0x38, 0xb8, 0xf6, 0xbd, 0x90, 0x1d, 0x24, 0xbf,
     0xb4, 0x6c, 0x63, 0x3c, 0xf5, 0xef, 0x87, 0x3e, 0xd7, 0xe7,
@@ -13415,10 +13434,6 @@ ai_handle ai_grunet_data_weights_get(void)
     0xcb, 0xec, 0xa4, 0x3d, 0xa8, 0xd9, 0x46, 0x3e, 0x49,
     0x9f, 0xd0, 0x3d, 0x03, 0xc8, 0x43, 0xbd, 0x8e, 0x72,
     0x68, 0xbc, 0xdf, 0xa0, 0x38, 0xbe, 0x52, 0x49, 0x8f,
-    0x3e, 0xcd, 0x24, 0x5e, 0x3b, 0x93, 0x52, 0x9a, 0xbd
-  };
-
+    0x3e, 0xcd, 0x24, 0x5e, 0x3b, 0x93, 0x52, 0x9a, 0xbd  };
   return AI_HANDLE_PTR(s_grunet_weights);
-
 }
-

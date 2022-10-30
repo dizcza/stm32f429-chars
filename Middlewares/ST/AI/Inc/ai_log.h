@@ -25,7 +25,7 @@ extern "C" {
  * functionalities
  */
 
-#define LOG_VERSION       "0.3.0"
+#define LOG_VERSION       "0.4.0"
 #define LOG_CR            "\r\n"
 
 /***** Compilation options: define/undef as required **************************/
@@ -123,6 +123,15 @@ void ai_log_set_fp(FILE *fp);
 #endif
 
 /*!
+ * @brief Routine that redirect a printf() to logger
+ * @ingroup ai_log
+ * @param[in] level the log level of the input message
+ * @param[in] fmt the varargs format of the string to print 
+ */
+void ai_log_print(
+	const uint8_t level, const char *fmt, ...);
+
+/*!
  * @brief Main Routine: PLEASE invoke always by using defined macros
  * @ingroup ai_log
  * @param[in] level the log level of the input message
@@ -130,7 +139,8 @@ void ai_log_set_fp(FILE *fp);
  * generating the message to log
  * @param[in] fmt the varargs format of the string to print 
  */
-void ai_log_log(const uint8_t level, const char *file,
+void ai_log_log(
+  const uint8_t level, const char *file,
   const int line, const char *fmt, ...);
 
 #ifdef __cplusplus

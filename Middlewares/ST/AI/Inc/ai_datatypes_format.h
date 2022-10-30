@@ -18,8 +18,8 @@
   ******************************************************************************
   */
 
-#ifndef __AI_DATATYPES_FORMAT_H__
-#define __AI_DATATYPES_FORMAT_H__
+#ifndef AI_DATATYPES_FORMAT_H
+#define AI_DATATYPES_FORMAT_H
 #pragma once
 
 #include "ai_platform.h"
@@ -69,6 +69,7 @@
  * - TYPE : 4 bits mark the format "family" type. Actually 5 families are coded,
  *      @ref AI_FMT_FLOAT (float types)
  *      @ref AI_FMT_Q (fixed-point types in Qm.n format)
+ *      @ref AI_FMT_BOOL (boolean type)
  *      @ref AI_FMT_LUT4 (compressed lookup 16 formats)
  *      @ref AI_FMT_LUT8 (compressed lookup 256 formats)
  * - PBITS 3 bits padding bits used to set the number of padding bits
@@ -148,6 +149,7 @@
 #define AI_FMT_NONE                   (0x0)
 #define AI_FMT_FLOAT                  (0x1)
 #define AI_FMT_Q                      (0x2)
+#define AI_FMT_BOOL                   (0x3)
 #define AI_FMT_LUT4                   (0x4)
 #define AI_FMT_LUT8                   (0x8)
 
@@ -228,14 +230,20 @@
     (0==AI_BUFFER_FMT_GET_SIGN(fmt_)) )
 
 /*! Q ai_array format handlers ************************************************/
-#define AI_ARRAY_FMT_SET_Q(bits_, fbits_) \
+#define AI_ARRAY_FMT_Q(bits_, fbits_) \
   ( AI_FMT_MASK_Q(AI_ARRAY_FORMAT_Q) | AI_FMT_SET_BITS(bits_) | AI_FMT_SET_FBITS(fbits_) )
+
+#define AI_ARRAY_FMT_SET_Q(bits_, fbits_) \
+  AI_ARRAY_FMT_Q(bits_, fbits_)
 
 #define AI_ARRAY_FMT_IS_Q(fmt_) \
   ( AI_FMT_GET(AI_FMT_MASK_Q(AI_ARRAY_FORMAT_Q))==AI_FMT_GET(AI_FMT_MASK_Q(fmt_)) )
 
-#define AI_ARRAY_FMT_SET_UQ(bits_, fbits_) \
+#define AI_ARRAY_FMT_UQ(bits_, fbits_) \
   ( AI_FMT_MASK_Q(AI_ARRAY_FORMAT_UQ) | AI_FMT_SET_BITS(bits_) | AI_FMT_SET_FBITS(fbits_) )
+
+#define AI_ARRAY_FMT_SET_UQ(bits_, fbits_) \
+  AI_ARRAY_FMT_UQ(bits_, fbits_)
 
 #define AI_ARRAY_FMT_IS_UQ(fmt_) \
   ( AI_FMT_GET(AI_FMT_MASK_Q(AI_ARRAY_FORMAT_UQ))==AI_FMT_GET(AI_FMT_MASK_Q(fmt_)) )
@@ -470,4 +478,4 @@ ai_size ai_array_get_elems_from_size(
 
 AI_API_DECLARE_END
 
-#endif /*__AI_DATATYPES_FORMAT_H__*/
+#endif /*AI_DATATYPES_FORMAT_H*/

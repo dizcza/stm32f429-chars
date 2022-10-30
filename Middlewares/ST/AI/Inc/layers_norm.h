@@ -36,7 +36,7 @@ AI_API_DECLARE_BEGIN
  * @ingroup layers_norm
  * @brief Batch normalization (scale with bias) layer
  */
-typedef ai_layer ai_layer_bn;
+typedef ai_layer_base ai_layer_bn;
 
 /*!
  * @struct ai_layer_lrn

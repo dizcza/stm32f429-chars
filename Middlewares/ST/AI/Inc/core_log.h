@@ -18,8 +18,8 @@
   ******************************************************************************
   */
 
-#ifndef __CORE_LOG_H_
-#define __CORE_LOG_H_
+#ifndef CORE_LOG_H
+#define CORE_LOG_H
 #pragma once
 
 #include "ai_platform.h"
@@ -72,46 +72,60 @@
   #define AI_LOG_SET_FILE_POINTER(fp_)                /*AI_LOG_SET_FILE_POINTER()*/
 #endif
 
-#if defined HAS_LOG && (HAS_LOG>=LOG_SUDO)
-  #define AI_LOG_SUDO(...) AI_WRAP_FUNC(ai_log_log(LOG_SUDO, __FILE__, __LINE__, __VA_ARGS__);)
+#if defined HAS_LOG
+  #define AI_LOG_PRINT(level, fmt, ...) \
+    AI_WRAP_FUNC(ai_log_print(level, fmt, ##__VA_ARGS__);)
 #else
-  #define AI_LOG_SUDO(...) /*AI_LOG_SUDO()*/
+  #define AI_LOG_PRINT(level, fmt, ...) /* AI_LOG_PRINT(...) */
+#endif
+
+#if defined HAS_LOG && (HAS_LOG>=LOG_SUDO)
+  #define AI_LOG_SUDO(fmt, ...) \
+    AI_WRAP_FUNC(ai_log_log(LOG_SUDO, __FILE__, __LINE__, fmt LOG_CR, ##__VA_ARGS__);)
+#else
+  #define AI_LOG_SUDO(fmt, ...) /*AI_LOG_SUDO()*/
 #endif
 
 #if defined HAS_LOG && (HAS_LOG>=LOG_TRACE)
-  #define AI_LOG_TRACE(...) AI_WRAP_FUNC(ai_log_log(LOG_TRACE, __FILE__, __LINE__, __VA_ARGS__);)
+  #define AI_LOG_TRACE(fmt, ...) \
+    AI_WRAP_FUNC(ai_log_log(LOG_TRACE, __FILE__, __LINE__, fmt LOG_CR, ##__VA_ARGS__);)
 #else
-  #define AI_LOG_TRACE(...) /*AI_LOG_TRACE()*/
+  #define AI_LOG_TRACE(fmt, ...) /*AI_LOG_TRACE()*/
 #endif
 
 #if defined HAS_LOG && (HAS_LOG>=LOG_DEBUG)
-  #define AI_LOG_DEBUG(...) AI_WRAP_FUNC(ai_log_log(LOG_DEBUG, __FILE__, __LINE__, __VA_ARGS__);)
+  #define AI_LOG_DEBUG(fmt, ...) \
+    AI_WRAP_FUNC(ai_log_log(LOG_DEBUG, __FILE__, __LINE__, fmt LOG_CR, ##__VA_ARGS__);)
 #else
-  #define AI_LOG_DEBUG(...) /*AI_LOG_DEBUG()*/
+  #define AI_LOG_DEBUG(fmt, ...) /*AI_LOG_DEBUG()*/
 #endif
 
 #if defined HAS_LOG && (HAS_LOG>=LOG_INFO)
-  #define AI_LOG_INFO(...)  AI_WRAP_FUNC(ai_log_log(LOG_INFO,  __FILE__, __LINE__, __VA_ARGS__);)
+  #define AI_LOG_INFO(fmt, ...) \
+    AI_WRAP_FUNC(ai_log_log(LOG_INFO,  __FILE__, __LINE__, fmt LOG_CR, ##__VA_ARGS__);)
 #else
-  #define AI_LOG_INFO(...) /*AI_LOG_INFO()*/
+  #define AI_LOG_INFO(fmt, ...) /*AI_LOG_INFO()*/
 #endif
 
 #if defined HAS_LOG && (HAS_LOG>=LOG_WARN)
-  #define AI_LOG_WARN(...)  AI_WRAP_FUNC(ai_log_log(LOG_WARN,  __FILE__, __LINE__, __VA_ARGS__);)
+  #define AI_LOG_WARN(fmt, ...) \
+    AI_WRAP_FUNC(ai_log_log(LOG_WARN,  __FILE__, __LINE__, fmt LOG_CR, ##__VA_ARGS__);)
 #else
-  #define AI_LOG_WARN(...) /*AI_LOG_WARN()*/
+  #define AI_LOG_WARN(fmt, ...) /*AI_LOG_WARN()*/
 #endif
 
 #if defined HAS_LOG && (HAS_LOG>=LOG_ERROR)
-  #define AI_LOG_ERROR(...) AI_WRAP_FUNC(ai_log_log(LOG_ERROR, __FILE__, __LINE__, __VA_ARGS__);)
+  #define AI_LOG_ERROR(fmt, ...) \
+    AI_WRAP_FUNC(ai_log_log(LOG_ERROR, __FILE__, __LINE__, fmt LOG_CR, ##__VA_ARGS__);)
 #else
-  #define AI_LOG_ERROR(...) /*AI_LOG_ERROR()*/
+  #define AI_LOG_ERROR(fmt, ...) /*AI_LOG_ERROR()*/
 #endif
 
 #if defined HAS_LOG && (HAS_LOG>=LOG_FATAL)
-  #define AI_LOG_FATAL(...) AI_WRAP_FUNC(ai_log_log(LOG_FATAL, __FILE__, __LINE__, __VA_ARGS__);)
+  #define AI_LOG_FATAL(fmt, ...) \
+    AI_WRAP_FUNC(ai_log_log(LOG_FATAL, __FILE__, __LINE__, fmt LOG_CR, ##__VA_ARGS__);)
 #else
-  #define AI_LOG_FATAL(...) /*AI_LOG_FATAL()*/
+  #define AI_LOG_FATAL(fmt, ...) /*AI_LOG_FATAL()*/
 #endif
 
-#endif    /*__CORE_LOG_H_*/
+#endif    /*CORE_LOG_H*/

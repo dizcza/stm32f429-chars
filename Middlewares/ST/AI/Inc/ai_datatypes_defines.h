@@ -18,8 +18,8 @@
   ******************************************************************************
   */
 
-#ifndef __AI_DATATYPES_DEFINES_H__
-#define __AI_DATATYPES_DEFINES_H__
+#ifndef AI_DATATYPES_DEFINES_H
+#define AI_DATATYPES_DEFINES_H
 #pragma once
 
 #include "ai_platform.h"
@@ -113,12 +113,6 @@
 /******************************************************************************/
 #define AI_ALIGN_MASKED(value, mask)    ( ((value)+(mask))&(~(mask)) )
 
-
-#define AI_GET_REVISION(major, minor, micro) ( \
-            ((ai_u32)(major)<<24) | \
-            ((ai_u32)(minor)<<16) | \
-            ((ai_u32)(micro)<< 8) )
-
 #define AI_GET_VERSION_STRING(major, minor, micro) \
           AI_STRINGIFY_ARG(major) "." \
           AI_STRINGIFY_ARG(minor) "." \
@@ -149,4 +143,4 @@
 #define AI_FLAG_UNSET(mask, flag)     (mask) &= (~(flag))
 #define AI_FLAG_IS_SET(mask, flag)    ((flag)==((mask)&(flag)))
 
-#endif    /*__AI_DATATYPES_DEFINES_H__*/
+#endif    /*AI_DATATYPES_DEFINES_H*/

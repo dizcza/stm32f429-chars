@@ -18,13 +18,12 @@
   ******************************************************************************
   */
 
-#ifndef __CORE_COMMON_H_
-#define __CORE_COMMON_H_
+#ifndef CORE_COMMON_H
+#define CORE_COMMON_H
 #pragma once
 
 #include "ai_platform.h"
 #include "ai_platform_interface.h"
-#include "ai_datatypes_internal.h"
 #include "core_datatypes.h"
 #include "core_log.h"
 
@@ -91,13 +90,13 @@
 
 /******************************************************************************/
 #define AI_NODE_TYPE(type_)  \
-  ( (ai_node_type)((ai_u32)(type_)&0xFFFF) )
+  ((ai_node_type)((ai_u32)(type_)&0xFFFF))
 
 #define AI_NODE_OBJ(obj_) \
   ((ai_node*)(obj_))
 
-#define AI_NODE_FORWARD_FUNC(func_) \
-  ((node_forward_func)(func_))
+#define AI_NODE_FUNC(func_) \
+  ((node_func)(func_))
 
 #define AI_NODE_IS_FIRST(node) \
   (AI_NODE_OBJ(node)==AI_NODE_OBJ(AI_NODE_OBJ(node)->network->input_node))
@@ -109,96 +108,104 @@
 #define AI_NODE_COMMON_FIELDS_DECLARE \
   ai_node_type type;              /*!< node type id (see @ref ai_node_type) */ \
   ai_id_obj id;                   /*!< node object instance id (see @ref ai_id_obj) */ \
+  ai_flags flags;                 /*!< node object flags */ \
   ai_klass_obj klass;             /*!< opaque handler to specific layer implementations */ \
   struct ai_network_s* network;   /*!< handle to global network context */ \
   struct ai_node_s* next;         /*!< the next node object in the sequence */ \
-  node_forward_func forward;      /*!< forward function for the node */ \
+  node_func forward;              /*!< forward function for the node */ \
   AI_CONST ai_tensor_chain* tensors; /*!< pointer to node tensor chain */
 
-#define AI_NODE_COMMON_INIT(type_, id_, forward_, next_, network_, klass_obj_) \
+#define AI_NODE_STATEFUL_FIELDS_DECLARE \
+  AI_NODE_COMMON_FIELDS_DECLARE \
+  ai_handle         state; \
+  node_func         init; \
+  node_func         update; \
+  node_func         destroy;
+
+#define AI_NODE_COMMON_INIT(type_, id_, flags_, klass_, network_, next_, forward_) \
   .type = AI_NODE_TYPE(type_), \
   .id   = AI_ID_OBJ(id_), \
-  .klass = AI_KLASS_OBJ(klass_obj_), \
+  .flags = (flags_), \
+  .klass = AI_KLASS_OBJ(klass_), \
   .network = AI_NETWORK_OBJ(network_), \
   .next = AI_NODE_OBJ(next_), \
-  .forward = AI_NODE_FORWARD_FUNC(forward_), \
-  .tensors = NULL
+  .forward = AI_NODE_FUNC(forward_)
 
 #define AI_FOR_EACH_NODE_DO(node_, nodes_) \
-  for ( ai_node* node_ = AI_NODE_OBJ(nodes_); (node_); \
-        node_ = ((AI_NODE_IS_LAST(node_)) ? NULL : (node_)->next) )
+  for (ai_node* node_ = AI_NODE_OBJ(nodes_); (node_); \
+       node_ = ((AI_NODE_IS_LAST(node_)) ? NULL : (node_)->next))
 
 
 /**  TENSOR CHAINS LOOP MACROS & GETTERS  *************************************/
 #define AI_FOR_EACH_TENSOR_CHAIN_DO(tlist_ptr_, chain_) \
   ai_tensor_list* tlist_ptr_ = (chain_)->chain; \
-  for ( ; tlist_ptr_<(((chain_)->chain)+((chain_)->size)); tlist_ptr_++ )
+  for (; tlist_ptr_<(((chain_)->chain)+((chain_)->size)); tlist_ptr_++)
 
 #define AI_FOR_EACH_TENSOR_LIST_DO(idx_, t_ptr_, tlist_ptr_) \
   ai_tensor* t_ptr_ = (GET_TENSOR_LIST_SIZE(tlist_ptr_)>0) \
     ? GET_TENSOR_LIST_ITEM(tlist_ptr_, 0) : NULL; \
-  for ( ai_size idx_ = 0; \
-        idx_ < GET_TENSOR_LIST_SIZE(tlist_ptr_) && \
-          (t_ptr_ = GET_TENSOR_LIST_ITEM(tlist_ptr_, idx_)) != 0; ++idx_)
+  for (ai_size idx_ = 0; \
+       idx_ < GET_TENSOR_LIST_SIZE(tlist_ptr_) && \
+         (t_ptr_ = GET_TENSOR_LIST_ITEM(tlist_ptr_, idx_)) != 0; ++idx_)
 
 #define GET_TENSOR_LIST_INFO(list_) \
-  ( (list_)->info )
+  ((list_)->info)
 
 #define GET_TENSOR_LIST_META(list_, pos_) \
-  ( &(GET_TENSOR_LIST_INFO(list_)->meta[pos_]) )
+  (&(GET_TENSOR_LIST_INFO(list_)->meta[pos_]))
 
 #define GET_TENSOR_LIST_STATE(list_, pos_) \
-  ( &(GET_TENSOR_LIST_INFO(list_)->state[pos_]) )
+  (&(GET_TENSOR_LIST_INFO(list_)->state[pos_]))
 
 #define GET_TENSOR_LIST_BUFFER(list_, pos_) \
-  ( &(GET_TENSOR_LIST_INFO(list_)->buffer[pos_]) )
+  (&(GET_TENSOR_LIST_INFO(list_)->buffer[pos_]))
 
 #define GET_TENSOR_LIST_ITEM(list_, pos_) \
-  ( (NULL!=(list_)->tensor) \
-    ? (list_)->tensor[(pos_)] : NULL )
+  ((NULL!=GET_TENSOR_LIST_ITEMS(list_)) \
+   ? GET_TENSOR_LIST_ITEMS(list_)[(pos_)] : NULL)
 
 #define GET_TENSOR_LIST_ITEMS(list_) \
-  ( (list_)->tensor )
+  ((list_)->tensor)
 
 #define GET_TENSOR_LIST_SIZE(list_) \
-  ( (NULL!=(list_)) ? (list_)->size : 0 )
+  ((NULL!=(list_)) ? (list_)->size : 0)
 
 #define GET_TENSOR_CHAIN_SIZE(chain_) \
-  ( (NULL!=(chain_)) ? (chain_)->size : 0 )
+  ((NULL!=(chain_)) ? (chain_)->size : 0)
 
 #define GET_TENSOR_LIST(chain_, type_) \
-  ( (AI_CONCAT(AI_TENSOR_CHAIN_, type_)<(chain_)->size) \
-      ? &(chain_)->chain[AI_CONCAT(AI_TENSOR_CHAIN_, type_)] : NULL )
+  ((AI_CONCAT(AI_TENSOR_CHAIN_, type_)<(chain_)->size) \
+     ? &(chain_)->chain[AI_CONCAT(AI_TENSOR_CHAIN_, type_)] : NULL)
 
 #define GET_TENSOR_LIST_IN(chain_) \
-  ( GET_TENSOR_LIST(chain_, INPUT) )
+  (GET_TENSOR_LIST(chain_, INPUT))
 
 #define GET_TENSOR_LIST_OUT(chain_) \
-  ( GET_TENSOR_LIST(chain_, OUTPUT) )
+  (GET_TENSOR_LIST(chain_, OUTPUT))
 
 #define GET_TENSOR_LIST_WEIGTHS(chain_) \
-  ( GET_TENSOR_LIST(chain_, WEIGHTS) )
+  (GET_TENSOR_LIST(chain_, WEIGHTS))
 
 #define GET_TENSOR_LIST_SCRATCH(chain_) \
-  ( GET_TENSOR_LIST(chain_, SCRATCH) )
+  (GET_TENSOR_LIST(chain_, SCRATCH))
 
 #define GET_TENSOR_IN(chain_, pos_) \
-  ( GET_TENSOR_LIST_ITEM(GET_TENSOR_LIST_IN(chain_), (pos_)) )
+  (GET_TENSOR_LIST_ITEM(GET_TENSOR_LIST_IN(chain_), (pos_)))
 
 #define GET_TENSOR_OUT(chain_, pos_) \
-  ( GET_TENSOR_LIST_ITEM(GET_TENSOR_LIST_OUT(chain_), (pos_)) )
+  (GET_TENSOR_LIST_ITEM(GET_TENSOR_LIST_OUT(chain_), (pos_)))
 
 #define SET_TENSOR_IN(chain_, pos_) \
-  ( GET_TENSOR_LIST_IN(chain_)->tensor[(pos_)] )
+  (GET_TENSOR_LIST_IN(chain_)->tensor[(pos_)])
 
 #define SET_TENSOR_OUT(chain_, pos_) \
-  ( GET_TENSOR_LIST_OUT(chain_)->tensor[(pos_)] )
+  (GET_TENSOR_LIST_OUT(chain_)->tensor[(pos_)])
 
 #define GET_TENSOR_WEIGHTS(chain_, pos_) \
-  ( GET_TENSOR_LIST_ITEM(GET_TENSOR_LIST_WEIGTHS(chain_), (pos_)) )
+  (GET_TENSOR_LIST_ITEM(GET_TENSOR_LIST_WEIGTHS(chain_), (pos_)))
 
 #define GET_TENSOR_SCRATCH(chain_, pos_) \
-  ( GET_TENSOR_LIST_ITEM(GET_TENSOR_LIST_SCRATCH(chain_), (pos_)) )
+  (GET_TENSOR_LIST_ITEM(GET_TENSOR_LIST_SCRATCH(chain_), (pos_)))
 
 #define AI_NODE_IO_GET(node_, in_, out_) \
   ASSERT_NODE_SANITY(node_) \
@@ -228,11 +235,11 @@ AI_API_DECLARE_BEGIN
 typedef uint16_t ai_node_type;
 
 /*!
- * @typedef void (*node_forward_func)(struct ai_node_s* node)
+ * @typedef void (*node_func)(struct ai_node_s* node)
  * @ingroup core_common
  * @brief Callback signatures for all forward functions
  */
-typedef void (*node_forward_func)(struct ai_node_s* node);
+typedef void (*node_func)(struct ai_node_s* node);
 
 /*!
  * @typedef ai_float (*func_nl_el)(const ai_float x)
@@ -256,6 +263,19 @@ typedef ai_float (*func_nl_el)(const ai_float x);
 typedef AI_ALIGNED_TYPE(struct, 4) ai_node_s {
   AI_NODE_COMMON_FIELDS_DECLARE
 } ai_node;
+
+/*!
+ * @struct ai_node_stateful
+ * @ingroup core_common
+ * @brief Structure encoding a stateful node of the network
+ *
+ * The node struct includes information about the network it belong to, the
+ * next node in a sequential network and the init, update and forward functions.
+ * The node functions are implemented in the @ref layers module.
+ */
+typedef AI_ALIGNED_TYPE(struct, 4) ai_node_stateful_s {
+  AI_NODE_STATEFUL_FIELDS_DECLARE
+} ai_node_stateful;
 
 /*!
  * @brief initialize core module
@@ -288,4 +308,4 @@ ai_bool core_set_error(
 
 AI_API_DECLARE_END
 
-#endif    /*__CORE_COMMON_H_*/
+#endif    /*CORE_COMMON_H*/

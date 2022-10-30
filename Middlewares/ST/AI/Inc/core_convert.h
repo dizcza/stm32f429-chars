@@ -34,8 +34,8 @@
   ******************************************************************************
   */
 
-#ifndef __CORE_CONVERT_H_
-#define __CORE_CONVERT_H_
+#ifndef CORE_CONVERT_H
+#define CORE_CONVERT_H
 #pragma once
 
 #include "ai_platform.h"
@@ -86,4 +86,4 @@ AI_INTERNAL_API
 void core_shape_to_stride(ai_stride* out, const ai_shape* in);
 
 
-#endif    /*__CORE_CONVERT_H_*/
+#endif    /*CORE_CONVERT_H*/

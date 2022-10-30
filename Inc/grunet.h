@@ -2,12 +2,12 @@
   ******************************************************************************
   * @file    grunet.h
   * @author  AST Embedded Analytics Research Platform
-  * @date    Tue Aug  4 00:28:52 2020
+  * @date    Sun Oct 30 22:26:01 2022
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2018 STMicroelectronics.
+  * Copyright (c) 2022 STMicroelectronics.
   * All rights reserved.
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -18,39 +18,59 @@
   ******************************************************************************
   */
 
-#ifndef __AI_GRUNET_H__
-#define __AI_GRUNET_H__
+#ifndef AI_GRUNET_H
+#define AI_GRUNET_H
 #pragma once
 
+#include "grunet_config.h"
 #include "ai_platform.h"
-#include "ai_platform_interface.h"
 
+/******************************************************************************/
 #define AI_GRUNET_MODEL_NAME          "grunet"
+#define AI_GRUNET_ORIGIN_MODEL_NAME   "gru_input30_hidden100_acc09833"
 
-#define AI_GRUNET_IN_NUM       (1)
+/******************************************************************************/
+#define AI_GRUNET_ACTIVATIONS_ALIGNMENT   (4)
+
+
+
+/******************************************************************************/
+#define AI_GRUNET_IN_NUM        (1)
 #define AI_GRUNET_IN { \
   AI_BUFFER_OBJ_INIT(AI_BUFFER_FORMAT_FLOAT, 30, 1, 2, 1, NULL), \
 }
 #define AI_GRUNET_IN_SIZE { \
-  (30 * 1 * 2), \
+  AI_GRUNET_IN_1_SIZE, \
 }
-#define AI_GRUNET_IN_1_SIZE  (30 * 1 * 2)
-#define AI_GRUNET_IN_1_SIZE_BYTES  ((30 * 1 * 2) * 4)
+#define AI_GRUNET_IN_SIZE_BYTES { \
+  AI_GRUNET_IN_1_SIZE_BYTES, \
+}
+#define AI_GRUNET_IN_1_HEIGHT      (30)
+#define AI_GRUNET_IN_1_WIDTH       (1)
+#define AI_GRUNET_IN_1_CHANNEL     (2)
+#define AI_GRUNET_IN_1_SIZE        (30 * 1 * 2)
+#define AI_GRUNET_IN_1_SIZE_BYTES  (AI_GRUNET_IN_1_SIZE * 4)
 
-
-
-
-#define AI_GRUNET_OUT_NUM      (1)
+/******************************************************************************/
+#define AI_GRUNET_OUT_NUM       (1)
 #define AI_GRUNET_OUT { \
   AI_BUFFER_OBJ_INIT(AI_BUFFER_FORMAT_FLOAT, 1, 1, 26, 1, NULL), \
 }
 #define AI_GRUNET_OUT_SIZE { \
-  (1 * 1 * 26), \
+  AI_GRUNET_OUT_1_SIZE, \
 }
-#define AI_GRUNET_OUT_1_SIZE  (1 * 1 * 26)
-#define AI_GRUNET_OUT_1_SIZE_BYTES  ((1 * 1 * 26) * 4)
+#define AI_GRUNET_OUT_SIZE_BYTES { \
+  AI_GRUNET_OUT_1_SIZE_BYTES, \
+}
+#define AI_GRUNET_OUT_1_HEIGHT      (1)
+#define AI_GRUNET_OUT_1_WIDTH       (1)
+#define AI_GRUNET_OUT_1_CHANNEL     (26)
+#define AI_GRUNET_OUT_1_SIZE        (1 * 1 * 26)
+#define AI_GRUNET_OUT_1_SIZE_BYTES  (AI_GRUNET_OUT_1_SIZE * 4)
 
+/******************************************************************************/
 #define AI_GRUNET_N_NODES (3)
+
 
 AI_API_DECLARE_BEGIN
 
@@ -180,4 +200,4 @@ ai_i32 ai_grunet_forward(
 
 AI_API_DECLARE_END
 
-#endif /*__AI_GRUNET_H__*/
+#endif /* AI_GRUNET_H */

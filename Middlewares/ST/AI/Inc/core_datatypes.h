@@ -19,8 +19,8 @@
   ******************************************************************************
   */
 
-#ifndef __AI_CORE_DATATYPES_H_
-#define __AI_CORE_DATATYPES_H_
+#ifndef AI_CORE_DATATYPES_H
+#define AI_CORE_DATATYPES_H
 #pragma once
 #include <stdint.h>
 
@@ -32,8 +32,8 @@
 /*!
  * @brief platform runtime core library version
  */
-#define AI_PLATFORM_RUNTIME_MAJOR    5
-#define AI_PLATFORM_RUNTIME_MINOR    1
+#define AI_PLATFORM_RUNTIME_MAJOR    6
+#define AI_PLATFORM_RUNTIME_MINOR    0
 #define AI_PLATFORM_RUNTIME_MICRO    0
 
 #define AI_MAGIC_CONTEXT_TOKEN       (0xA1C00100)   /*!< AI Cool! Magic Token */
@@ -56,4 +56,4 @@
  */
 typedef uint16_t ai_id_obj;
 
-#endif    /*__AI_CORE_DATATYPES_H_*/
+#endif    /*AI_CORE_DATATYPES_H*/

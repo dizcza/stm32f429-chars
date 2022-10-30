@@ -17,13 +17,12 @@
   *
   ******************************************************************************
   */ 
-#ifndef __AI_MATH_HELPERS_H_
-#define __AI_MATH_HELPERS_H_
+#ifndef AI_MATH_HELPERS_H
+#define AI_MATH_HELPERS_H
 #include <math.h>
 
 #include "ai_platform.h"
 #include "ai_platform_interface.h"
-#include "ai_datatypes_internal.h"
 
 //#if defined(HAS_X86) || defined(__CC_ARM) || defined(CM4) || defined(CM7)
 #define _AI_CONV_2D_LOOP_UNROLLING_OPTIM
@@ -52,6 +51,31 @@
 #define AI_FLOOR_DIV(x, y)      AI_FLOOR((x)/(y))  /* floor division: x // y */
 #define AI_FLOOR_MOD(x, y)      fmodf(x, y)
 #define AI_ROUND(x)             roundf(x)
+#define AI_POW(x,y)             powf(x, y)
+
+AI_API_DECLARE_BEGIN
+
+/*!
+ * @typedef ai_vec4_float
+ * @ingroup ai_datatypes_internal
+ * @brief 32bit X 4 float (optimization for embedded MCU)
+ */
+typedef struct _ai_vec4_float {
+    ai_float a1;
+    ai_float a2;
+    ai_float a3;
+    ai_float a4;
+} ai_vec4_float;
+
+
+#define AI_VEC4_FLOAT(ptr_) \
+  _get_vec4_float((ai_handle)(ptr_))
+
+AI_DECLARE_STATIC
+ai_vec4_float _get_vec4_float(const ai_handle fptr)
+{
+    return *((const ai_vec4_float*)fptr);
+}
 
 #if defined(STM32_DOT_INLINE_OPTIM)
 
@@ -212,7 +236,7 @@ void __ai_math_dot_array_opt(
 #define AI_MATH_SQRT(x)         ai_math_sqrt(x)
 #define AI_MATH_TAN(x)          tanf(x)
 #define AI_MATH_TANH(x)         tanhf(x)
-
+#define AI_MATH_SQUARE(x)       AI_MATH_POW(x, 2.0f)
 #define AI_MATH_RELU_TEST(x, thr, min, max) \
   ( ((x)<(thr)) ? (min) : (max) )
 
@@ -257,8 +281,6 @@ void __ai_math_dot_array_opt(
 
 #define AI_MATH_SOFT_SIGN(x) \
   ((x)/(AI_ABS(x)+1.0f))
-
-AI_API_DECLARE_BEGIN
 
 /*!
  * @defgroup math_helpers Math helpers
@@ -307,6 +329,15 @@ ai_float ai_math_sqrt(const ai_float x);
  */
 AI_INTERFACE_ENTRY
 ai_float ai_math_exp(const ai_float x);
+
+/*!
+ * @brief platform logical not
+ * @ingroup math_helpers
+ * @param x input value
+ * @return not of the value
+ */
+AI_INTERFACE_ENTRY
+ai_bool ai_logical_not(const ai_bool x);
 
 /*!
  * @brief platform optimized pow on a float value
@@ -382,16 +413,80 @@ ai_float ai_math_sign(const ai_float x);
  */
 AI_INTERFACE_ENTRY
 ai_float ai_fast_prelu(const ai_float x, const ai_float slope);
+AI_INTERFACE_ENTRY void ai_div(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_div_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
+AI_INTERFACE_ENTRY void ai_div_buffer_INT8(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop, 
+                                           const ai_handle pScale1, const ai_handle pZp1, const ai_handle pScale2, const ai_handle pZp2,
+                                           const ai_handle pScaleout, const ai_handle pZpout);
+AI_INTERFACE_ENTRY void ai_div_buffer_UINT8(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop, 
+                                            const ai_handle pScale1, const ai_handle pZp1, const ai_handle pScale2, const ai_handle pZp2,
+                                            const ai_handle pScaleout, const ai_handle pZpout);
+AI_INTERFACE_ENTRY void ai_floor_div(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_floor_div_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
+AI_INTERFACE_ENTRY void ai_floor_mod(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_floor_mod_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
+AI_INTERFACE_ENTRY void ai_max(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_max_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
+AI_INTERFACE_ENTRY void ai_max_buffer_INT8(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop, 
+                                           const ai_handle pScale1, const ai_handle pZp1, const ai_handle pScale2, const ai_handle pZp2,
+                                           const ai_handle pScaleout, const ai_handle pZpout);
+AI_INTERFACE_ENTRY void ai_max_buffer_UINT8(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop, 
+                                            const ai_handle pScale1, const ai_handle pZp1, const ai_handle pScale2, const ai_handle pZp2,
+                                            const ai_handle pScaleout, const ai_handle pZpout);
+AI_INTERFACE_ENTRY void ai_min(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_min_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
+AI_INTERFACE_ENTRY void ai_min_buffer_INT8(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop, 
+                                           const ai_handle pScale1, const ai_handle pZp1, const ai_handle pScale2, const ai_handle pZp2,
+                                           const ai_handle pScaleout, const ai_handle pZpout);
+AI_INTERFACE_ENTRY void ai_min_buffer_UINT8(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop, 
+                                            const ai_handle pScale1, const ai_handle pZp1, const ai_handle pScale2, const ai_handle pZp2,
+                                            const ai_handle pScaleout, const ai_handle pZpout);
+AI_INTERFACE_ENTRY void ai_mul(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_mul_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
+AI_INTERFACE_ENTRY void ai_mul_buffer_INT8(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop, 
+                                           const ai_handle pScale1, const ai_handle pZp1, const ai_handle pScale2, const ai_handle pZp2,
+                                           const ai_handle pScaleout, const ai_handle pZpout);
+AI_INTERFACE_ENTRY void ai_mul_buffer_UINT8(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop, 
+                                            const ai_handle pScale1, const ai_handle pZp1, const ai_handle pScale2, const ai_handle pZp2,
+                                            const ai_handle pScaleout, const ai_handle pZpout);
+AI_INTERFACE_ENTRY void ai_pow(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_pow_buffer(ai_handle out, const ai_handle b, const ai_handle e, const ai_size loop);
 
-AI_INTERFACE_ENTRY ai_float ai_div(const ai_float a, const ai_float b);
-AI_INTERFACE_ENTRY ai_float ai_floor_div(const ai_float a, const ai_float b);
-AI_INTERFACE_ENTRY ai_float ai_floor_mod(const ai_float a, const ai_float b);
-AI_INTERFACE_ENTRY ai_float ai_max(const ai_float a, const ai_float b);
-AI_INTERFACE_ENTRY ai_float ai_min(const ai_float a, const ai_float b);
-AI_INTERFACE_ENTRY ai_float ai_mul(const ai_float a, const ai_float b);
-AI_INTERFACE_ENTRY ai_float ai_sub(const ai_float a, const ai_float b);
-AI_INTERFACE_ENTRY ai_float ai_sum(const ai_float a, const ai_float b);
+AI_INTERFACE_ENTRY void ai_sub(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_sub_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
+AI_INTERFACE_ENTRY void ai_sub_buffer_INT8(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop, 
+                                           const ai_handle pScale1, const ai_handle pZp1, const ai_handle pScale2, const ai_handle pZp2,
+                                           const ai_handle pScaleout, const ai_handle pZpout);
+AI_INTERFACE_ENTRY void ai_sub_buffer_UINT8(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop, 
+                                            const ai_handle pScale1, const ai_handle pZp1, const ai_handle pScale2, const ai_handle pZp2,
+                                            const ai_handle pScaleout, const ai_handle pZpout);
+AI_INTERFACE_ENTRY void ai_sum(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_sum_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
+AI_INTERFACE_ENTRY void ai_sum_buffer_INT8(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop, 
+                                           const ai_handle pScale1, const ai_handle pZp1, const ai_handle pScale2, const ai_handle pZp2,
+                                           const ai_handle pScaleout, const ai_handle pZpout);
+AI_INTERFACE_ENTRY void ai_sum_buffer_UINT8(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop, 
+                                            const ai_handle pScale1, const ai_handle pZp1, const ai_handle pScale2, const ai_handle pZp2,
+                                            const ai_handle pScaleout, const ai_handle pZpout);
+AI_INTERFACE_ENTRY void ai_and(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_and_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
+AI_INTERFACE_ENTRY void ai_or(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_or_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
+AI_INTERFACE_ENTRY void ai_not(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_not_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
+AI_INTERFACE_ENTRY void ai_xor(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_xor_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
+AI_INTERFACE_ENTRY void ai_greater(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_greater_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
+AI_INTERFACE_ENTRY void ai_greater_or_equal(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_greater_or_equal_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
+AI_INTERFACE_ENTRY void ai_less(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_less_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
+AI_INTERFACE_ENTRY void ai_less_or_equal(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_less_or_equal_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
+AI_INTERFACE_ENTRY void ai_equal(ai_handle out, const ai_handle a, const ai_handle b);
+AI_INTERFACE_ENTRY void ai_equal_buffer(ai_handle out, const ai_handle a, const ai_handle b, const ai_size loop);
 
 AI_API_DECLARE_END
 
-#endif /* __MATH_HELPERS_H_ */
+#endif /*AI_MATH_HELPERS_H*/

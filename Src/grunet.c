@@ -2,12 +2,12 @@
   ******************************************************************************
   * @file    grunet.c
   * @author  AST Embedded Analytics Research Platform
-  * @date    Tue Aug  4 00:28:52 2020
+  * @date    Sun Oct 30 22:26:01 2022
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2018 STMicroelectronics.
+  * Copyright (c) 2022 STMicroelectronics.
   * All rights reserved.
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -25,35 +25,38 @@
 #include "ai_math_helpers.h"
 
 #include "core_common.h"
+#include "core_convert.h"
+
 #include "layers.h"
 
-#undef AI_TOOLS_VERSION_MAJOR
-#undef AI_TOOLS_VERSION_MINOR
-#undef AI_TOOLS_VERSION_MICRO
-#define AI_TOOLS_VERSION_MAJOR 5
-#define AI_TOOLS_VERSION_MINOR 1
+
+
+/*
+#define AI_TOOLS_VERSION_MAJOR 6
+#define AI_TOOLS_VERSION_MINOR 0
 #define AI_TOOLS_VERSION_MICRO 0
+#define AI_TOOLS_VERSION_EXTRA "RC6"
 
+*/
 
-#undef AI_TOOLS_API_VERSION_MAJOR
-#undef AI_TOOLS_API_VERSION_MINOR
-#undef AI_TOOLS_API_VERSION_MICRO
+/*
 #define AI_TOOLS_API_VERSION_MAJOR 1
-#define AI_TOOLS_API_VERSION_MINOR 3
+#define AI_TOOLS_API_VERSION_MINOR 4
 #define AI_TOOLS_API_VERSION_MICRO 0
+*/
 
 #undef AI_NET_OBJ_INSTANCE
 #define AI_NET_OBJ_INSTANCE g_grunet
  
 #undef AI_GRUNET_MODEL_SIGNATURE
-#define AI_GRUNET_MODEL_SIGNATURE     "b52ef3dfaf0c26801c8fdca3e48e3f5a"
+#define AI_GRUNET_MODEL_SIGNATURE     "d7c563c864c72046058d029f0fb7aa1d"
 
 #ifndef AI_TOOLS_REVISION_ID
-#define AI_TOOLS_REVISION_ID     "(rev-5.1.0)"
+#define AI_TOOLS_REVISION_ID     ""
 #endif
 
 #undef AI_TOOLS_DATE_TIME
-#define AI_TOOLS_DATE_TIME   "Tue Aug  4 00:28:52 2020"
+#define AI_TOOLS_DATE_TIME   "Sun Oct 30 22:26:01 2022"
 
 #undef AI_TOOLS_COMPILE_TIME
 #define AI_TOOLS_COMPILE_TIME    __DATE__ " " __TIME__
@@ -66,29 +69,29 @@ AI_STATIC ai_network AI_NET_OBJ_INSTANCE;
 
 
 /**  Forward network array declarations  **************************************/
-AI_STATIC ai_array gru_1_scratch0_array;   /* Array #0 */
-AI_STATIC ai_array dense_1_bias_array;   /* Array #1 */
-AI_STATIC ai_array dense_1_weights_array;   /* Array #2 */
-AI_STATIC ai_array gru_1_bias_array;   /* Array #3 */
-AI_STATIC ai_array gru_1_recurrent_array;   /* Array #4 */
-AI_STATIC ai_array gru_1_kernel_array;   /* Array #5 */
-AI_STATIC ai_array input_0_output_array;   /* Array #6 */
-AI_STATIC ai_array gru_1_output_array;   /* Array #7 */
-AI_STATIC ai_array dense_1_output_array;   /* Array #8 */
-AI_STATIC ai_array dense_1_nl_output_array;   /* Array #9 */
+AI_STATIC ai_array input_0_output_array;   /* Array #0 */
+AI_STATIC ai_array gru_1_output_array;   /* Array #1 */
+AI_STATIC ai_array dense_1_output_array;   /* Array #2 */
+AI_STATIC ai_array dense_1_nl_output_array;   /* Array #3 */
+AI_STATIC ai_array gru_1_kernel_array;   /* Array #4 */
+AI_STATIC ai_array gru_1_recurrent_array;   /* Array #5 */
+AI_STATIC ai_array gru_1_bias_array;   /* Array #6 */
+AI_STATIC ai_array dense_1_weights_array;   /* Array #7 */
+AI_STATIC ai_array dense_1_bias_array;   /* Array #8 */
+AI_STATIC ai_array gru_1_scratch0_array;   /* Array #9 */
 
 
 /**  Forward network tensor declarations  *************************************/
-AI_STATIC ai_tensor gru_1_scratch0;   /* Tensor #0 */
-AI_STATIC ai_tensor dense_1_bias;   /* Tensor #1 */
-AI_STATIC ai_tensor dense_1_weights;   /* Tensor #2 */
-AI_STATIC ai_tensor gru_1_bias;   /* Tensor #3 */
-AI_STATIC ai_tensor gru_1_recurrent;   /* Tensor #4 */
-AI_STATIC ai_tensor gru_1_kernel;   /* Tensor #5 */
-AI_STATIC ai_tensor input_0_output;   /* Tensor #6 */
-AI_STATIC ai_tensor gru_1_output;   /* Tensor #7 */
-AI_STATIC ai_tensor dense_1_output;   /* Tensor #8 */
-AI_STATIC ai_tensor dense_1_nl_output;   /* Tensor #9 */
+AI_STATIC ai_tensor input_0_output;   /* Tensor #0 */
+AI_STATIC ai_tensor gru_1_output;   /* Tensor #1 */
+AI_STATIC ai_tensor dense_1_output;   /* Tensor #2 */
+AI_STATIC ai_tensor dense_1_nl_output;   /* Tensor #3 */
+AI_STATIC ai_tensor gru_1_kernel;   /* Tensor #4 */
+AI_STATIC ai_tensor gru_1_recurrent;   /* Tensor #5 */
+AI_STATIC ai_tensor gru_1_bias;   /* Tensor #6 */
+AI_STATIC ai_tensor dense_1_weights;   /* Tensor #7 */
+AI_STATIC ai_tensor dense_1_bias;   /* Tensor #8 */
+AI_STATIC ai_tensor gru_1_scratch0;   /* Tensor #9 */
 
 
 /**  Forward network tensor chain declarations  *******************************/
@@ -103,127 +106,129 @@ AI_STATIC ai_layer_dense dense_1_layer; /* Layer #1 */
 AI_STATIC ai_layer_nl dense_1_nl_layer; /* Layer #2 */
 
 
+
+
 /**  Array declarations section  **********************************************/
 /* Array#0 */
-AI_ARRAY_OBJ_DECLARE(
-  gru_1_scratch0_array, AI_ARRAY_FORMAT_FLOAT,
-  NULL, NULL, 600, AI_STATIC)
-
-/* Array#1 */
-AI_ARRAY_OBJ_DECLARE(
-  dense_1_bias_array, AI_ARRAY_FORMAT_FLOAT,
-  NULL, NULL, 26, AI_STATIC)
-
-/* Array#2 */
-AI_ARRAY_OBJ_DECLARE(
-  dense_1_weights_array, AI_ARRAY_FORMAT_FLOAT,
-  NULL, NULL, 2600, AI_STATIC)
-
-/* Array#3 */
-AI_ARRAY_OBJ_DECLARE(
-  gru_1_bias_array, AI_ARRAY_FORMAT_FLOAT,
-  NULL, NULL, 300, AI_STATIC)
-
-/* Array#4 */
-AI_ARRAY_OBJ_DECLARE(
-  gru_1_recurrent_array, AI_ARRAY_FORMAT_FLOAT,
-  NULL, NULL, 30000, AI_STATIC)
-
-/* Array#5 */
-AI_ARRAY_OBJ_DECLARE(
-  gru_1_kernel_array, AI_ARRAY_FORMAT_FLOAT,
-  NULL, NULL, 600, AI_STATIC)
-
-/* Array#6 */
 AI_ARRAY_OBJ_DECLARE(
   input_0_output_array, AI_ARRAY_FORMAT_FLOAT|AI_FMT_FLAG_IS_IO,
   NULL, NULL, 60, AI_STATIC)
 
-/* Array#7 */
+/* Array#1 */
 AI_ARRAY_OBJ_DECLARE(
   gru_1_output_array, AI_ARRAY_FORMAT_FLOAT,
   NULL, NULL, 100, AI_STATIC)
 
-/* Array#8 */
+/* Array#2 */
 AI_ARRAY_OBJ_DECLARE(
   dense_1_output_array, AI_ARRAY_FORMAT_FLOAT,
   NULL, NULL, 26, AI_STATIC)
 
-/* Array#9 */
+/* Array#3 */
 AI_ARRAY_OBJ_DECLARE(
   dense_1_nl_output_array, AI_ARRAY_FORMAT_FLOAT|AI_FMT_FLAG_IS_IO,
   NULL, NULL, 26, AI_STATIC)
 
+/* Array#4 */
+AI_ARRAY_OBJ_DECLARE(
+  gru_1_kernel_array, AI_ARRAY_FORMAT_FLOAT,
+  NULL, NULL, 600, AI_STATIC)
+
+/* Array#5 */
+AI_ARRAY_OBJ_DECLARE(
+  gru_1_recurrent_array, AI_ARRAY_FORMAT_FLOAT,
+  NULL, NULL, 30000, AI_STATIC)
+
+/* Array#6 */
+AI_ARRAY_OBJ_DECLARE(
+  gru_1_bias_array, AI_ARRAY_FORMAT_FLOAT,
+  NULL, NULL, 300, AI_STATIC)
+
+/* Array#7 */
+AI_ARRAY_OBJ_DECLARE(
+  dense_1_weights_array, AI_ARRAY_FORMAT_FLOAT,
+  NULL, NULL, 2600, AI_STATIC)
+
+/* Array#8 */
+AI_ARRAY_OBJ_DECLARE(
+  dense_1_bias_array, AI_ARRAY_FORMAT_FLOAT,
+  NULL, NULL, 26, AI_STATIC)
+
+/* Array#9 */
+AI_ARRAY_OBJ_DECLARE(
+  gru_1_scratch0_array, AI_ARRAY_FORMAT_FLOAT,
+  NULL, NULL, 600, AI_STATIC)
+
 /**  Tensor declarations section  *********************************************/
 /* Tensor #0 */
 AI_TENSOR_OBJ_DECLARE(
-  gru_1_scratch0, AI_STATIC,
-  0x0, 0x0,
-  AI_SHAPE_INIT(4, 1, 600, 1, 1), AI_STRIDE_INIT(4, 4, 4, 2400, 2400),
-  1, &gru_1_scratch0_array, NULL)
-
-/* Tensor #1 */
-AI_TENSOR_OBJ_DECLARE(
-  dense_1_bias, AI_STATIC,
-  0x0, 0x0,
-  AI_SHAPE_INIT(4, 1, 26, 1, 1), AI_STRIDE_INIT(4, 4, 4, 104, 104),
-  1, &dense_1_bias_array, NULL)
-
-/* Tensor #2 */
-AI_TENSOR_OBJ_DECLARE(
-  dense_1_weights, AI_STATIC,
-  0x0, 0x0,
-  AI_SHAPE_INIT(4, 100, 26, 1, 1), AI_STRIDE_INIT(4, 4, 400, 10400, 10400),
-  1, &dense_1_weights_array, NULL)
-
-/* Tensor #3 */
-AI_TENSOR_OBJ_DECLARE(
-  gru_1_bias, AI_STATIC,
-  0x0, 0x0,
-  AI_SHAPE_INIT(4, 1, 300, 1, 1), AI_STRIDE_INIT(4, 4, 4, 1200, 1200),
-  1, &gru_1_bias_array, NULL)
-
-/* Tensor #4 */
-AI_TENSOR_OBJ_DECLARE(
-  gru_1_recurrent, AI_STATIC,
-  0x0, 0x0,
-  AI_SHAPE_INIT(4, 100, 1, 1, 300), AI_STRIDE_INIT(4, 4, 400, 400, 400),
-  1, &gru_1_recurrent_array, NULL)
-
-/* Tensor #5 */
-AI_TENSOR_OBJ_DECLARE(
-  gru_1_kernel, AI_STATIC,
-  0x0, 0x0,
-  AI_SHAPE_INIT(4, 2, 1, 1, 300), AI_STRIDE_INIT(4, 4, 8, 8, 8),
-  1, &gru_1_kernel_array, NULL)
-
-/* Tensor #6 */
-AI_TENSOR_OBJ_DECLARE(
   input_0_output, AI_STATIC,
-  0x0, 0x0,
+  0, 0x0,
   AI_SHAPE_INIT(4, 1, 2, 1, 30), AI_STRIDE_INIT(4, 4, 4, 8, 8),
   1, &input_0_output_array, NULL)
 
-/* Tensor #7 */
+/* Tensor #1 */
 AI_TENSOR_OBJ_DECLARE(
   gru_1_output, AI_STATIC,
-  0x0, 0x0,
+  1, 0x0,
   AI_SHAPE_INIT(4, 1, 100, 1, 1), AI_STRIDE_INIT(4, 4, 4, 400, 400),
   1, &gru_1_output_array, NULL)
 
-/* Tensor #8 */
+/* Tensor #2 */
 AI_TENSOR_OBJ_DECLARE(
   dense_1_output, AI_STATIC,
-  0x0, 0x0,
+  2, 0x0,
   AI_SHAPE_INIT(4, 1, 26, 1, 1), AI_STRIDE_INIT(4, 4, 4, 104, 104),
   1, &dense_1_output_array, NULL)
 
-/* Tensor #9 */
+/* Tensor #3 */
 AI_TENSOR_OBJ_DECLARE(
   dense_1_nl_output, AI_STATIC,
-  0x0, 0x0,
+  3, 0x0,
   AI_SHAPE_INIT(4, 1, 26, 1, 1), AI_STRIDE_INIT(4, 4, 4, 104, 104),
   1, &dense_1_nl_output_array, NULL)
+
+/* Tensor #4 */
+AI_TENSOR_OBJ_DECLARE(
+  gru_1_kernel, AI_STATIC,
+  4, 0x0,
+  AI_SHAPE_INIT(4, 2, 1, 1, 300), AI_STRIDE_INIT(4, 4, 8, 8, 8),
+  1, &gru_1_kernel_array, NULL)
+
+/* Tensor #5 */
+AI_TENSOR_OBJ_DECLARE(
+  gru_1_recurrent, AI_STATIC,
+  5, 0x0,
+  AI_SHAPE_INIT(4, 100, 1, 1, 300), AI_STRIDE_INIT(4, 4, 400, 400, 400),
+  1, &gru_1_recurrent_array, NULL)
+
+/* Tensor #6 */
+AI_TENSOR_OBJ_DECLARE(
+  gru_1_bias, AI_STATIC,
+  6, 0x0,
+  AI_SHAPE_INIT(4, 1, 300, 1, 1), AI_STRIDE_INIT(4, 4, 4, 1200, 1200),
+  1, &gru_1_bias_array, NULL)
+
+/* Tensor #7 */
+AI_TENSOR_OBJ_DECLARE(
+  dense_1_weights, AI_STATIC,
+  7, 0x0,
+  AI_SHAPE_INIT(4, 100, 26, 1, 1), AI_STRIDE_INIT(4, 4, 400, 10400, 10400),
+  1, &dense_1_weights_array, NULL)
+
+/* Tensor #8 */
+AI_TENSOR_OBJ_DECLARE(
+  dense_1_bias, AI_STATIC,
+  8, 0x0,
+  AI_SHAPE_INIT(4, 1, 26, 1, 1), AI_STRIDE_INIT(4, 4, 4, 104, 104),
+  1, &dense_1_bias_array, NULL)
+
+/* Tensor #9 */
+AI_TENSOR_OBJ_DECLARE(
+  gru_1_scratch0, AI_STATIC,
+  9, 0x0,
+  AI_SHAPE_INIT(4, 1, 600, 1, 1), AI_STRIDE_INIT(4, 4, 4, 2400, 2400),
+  1, &gru_1_scratch0_array, NULL)
 
 
 
@@ -240,10 +245,10 @@ AI_TENSOR_CHAIN_OBJ_DECLARE(
 
 AI_LAYER_OBJ_DECLARE(
   gru_1_layer, 0,
-  GRU_TYPE,
+  GRU_TYPE, 0x0, NULL,
   gru, forward_gru,
-  &AI_NET_OBJ_INSTANCE, &dense_1_layer, AI_STATIC,
-  .tensors = &gru_1_chain, 
+  &gru_1_chain,
+  &AI_NET_OBJ_INSTANCE, &dense_1_layer, AI_STATIC, 
   .n_units = 100, 
   .activation_nl = nl_func_tanh_array_f32, 
   .go_backwards = false, 
@@ -262,10 +267,10 @@ AI_TENSOR_CHAIN_OBJ_DECLARE(
 
 AI_LAYER_OBJ_DECLARE(
   dense_1_layer, 1,
-  DENSE_TYPE,
+  DENSE_TYPE, 0x0, NULL,
   dense, forward_dense,
-  &AI_NET_OBJ_INSTANCE, &dense_1_nl_layer, AI_STATIC,
-  .tensors = &dense_1_chain, 
+  &dense_1_chain,
+  &AI_NET_OBJ_INSTANCE, &dense_1_nl_layer, AI_STATIC, 
 )
 
 AI_TENSOR_CHAIN_OBJ_DECLARE(
@@ -278,10 +283,11 @@ AI_TENSOR_CHAIN_OBJ_DECLARE(
 
 AI_LAYER_OBJ_DECLARE(
   dense_1_nl_layer, 1,
-  NL_TYPE,
+  NL_TYPE, 0x0, NULL,
   nl, forward_sm,
-  &AI_NET_OBJ_INSTANCE, &dense_1_nl_layer, AI_STATIC,
-  .tensors = &dense_1_nl_chain, 
+  &dense_1_nl_chain,
+  &AI_NET_OBJ_INSTANCE, &dense_1_nl_layer, AI_STATIC, 
+  .nl_params = NULL, 
 )
 
 
@@ -311,8 +317,6 @@ ai_bool grunet_configure_activations(
 
   {
     /* Updating activations (byte) offsets */
-    gru_1_scratch0_array.data = AI_PTR(activations + 0);
-    gru_1_scratch0_array.data_start = AI_PTR(activations + 0);
     input_0_output_array.data = AI_PTR(NULL);
     input_0_output_array.data_start = AI_PTR(NULL);
     gru_1_output_array.data = AI_PTR(activations + 2400);
@@ -321,6 +325,8 @@ ai_bool grunet_configure_activations(
     dense_1_output_array.data_start = AI_PTR(activations + 0);
     dense_1_nl_output_array.data = AI_PTR(NULL);
     dense_1_nl_output_array.data_start = AI_PTR(NULL);
+    gru_1_scratch0_array.data = AI_PTR(activations + 0);
+    gru_1_scratch0_array.data_start = AI_PTR(activations + 0);
     
   }
   return true;
@@ -341,21 +347,21 @@ ai_bool grunet_configure_weights(
   {
     /* Updating weights (byte) offsets */
     
-    dense_1_bias_array.format |= AI_FMT_FLAG_CONST;
-    dense_1_bias_array.data = AI_PTR(weights + 134000);
-    dense_1_bias_array.data_start = AI_PTR(weights + 134000);
-    dense_1_weights_array.format |= AI_FMT_FLAG_CONST;
-    dense_1_weights_array.data = AI_PTR(weights + 123600);
-    dense_1_weights_array.data_start = AI_PTR(weights + 123600);
-    gru_1_bias_array.format |= AI_FMT_FLAG_CONST;
-    gru_1_bias_array.data = AI_PTR(weights + 122400);
-    gru_1_bias_array.data_start = AI_PTR(weights + 122400);
-    gru_1_recurrent_array.format |= AI_FMT_FLAG_CONST;
-    gru_1_recurrent_array.data = AI_PTR(weights + 2400);
-    gru_1_recurrent_array.data_start = AI_PTR(weights + 2400);
     gru_1_kernel_array.format |= AI_FMT_FLAG_CONST;
     gru_1_kernel_array.data = AI_PTR(weights + 0);
     gru_1_kernel_array.data_start = AI_PTR(weights + 0);
+    gru_1_recurrent_array.format |= AI_FMT_FLAG_CONST;
+    gru_1_recurrent_array.data = AI_PTR(weights + 2400);
+    gru_1_recurrent_array.data_start = AI_PTR(weights + 2400);
+    gru_1_bias_array.format |= AI_FMT_FLAG_CONST;
+    gru_1_bias_array.data = AI_PTR(weights + 122400);
+    gru_1_bias_array.data_start = AI_PTR(weights + 122400);
+    dense_1_weights_array.format |= AI_FMT_FLAG_CONST;
+    dense_1_weights_array.data = AI_PTR(weights + 123600);
+    dense_1_weights_array.data_start = AI_PTR(weights + 123600);
+    dense_1_bias_array.format |= AI_FMT_FLAG_CONST;
+    dense_1_bias_array.data = AI_PTR(weights + 134000);
+    dense_1_bias_array.data_start = AI_PTR(weights + 134000);
   }
 
   return true;
@@ -385,13 +391,12 @@ ai_bool ai_grunet_get_info(
       .tool_revision     = AI_TOOLS_REVISION_ID,
       .tool_version      = {AI_TOOLS_VERSION_MAJOR, AI_TOOLS_VERSION_MINOR,
                             AI_TOOLS_VERSION_MICRO, 0x0},
-      .tool_api_version  = {AI_TOOLS_API_VERSION_MAJOR, AI_TOOLS_API_VERSION_MINOR,
-                            AI_TOOLS_API_VERSION_MICRO, 0x0},
+      .tool_api_version  = AI_STRUCT_INIT,
 
       .api_version            = ai_platform_api_get_version(),
       .interface_api_version  = ai_platform_interface_api_get_version(),
       
-      .n_macc            = 926990,
+      .n_macc            = 927016,
       .n_inputs          = 0,
       .inputs            = NULL,
       .n_outputs         = 0,
@@ -402,7 +407,7 @@ ai_bool ai_grunet_get_info(
       .signature         = 0x0,
     };
 
-    if ( !ai_platform_api_get_network_report(network, &r) ) return false;
+    if (!ai_platform_api_get_network_report(network, &r)) return false;
 
     *report = r;
     return true;
@@ -464,14 +469,9 @@ ai_i32 ai_grunet_forward(ai_handle network, const ai_buffer* input)
 }
 
 
+
 #undef AI_GRUNET_MODEL_SIGNATURE
 #undef AI_NET_OBJ_INSTANCE
-#undef AI_TOOLS_VERSION_MAJOR
-#undef AI_TOOLS_VERSION_MINOR
-#undef AI_TOOLS_VERSION_MICRO
-#undef AI_TOOLS_API_VERSION_MAJOR
-#undef AI_TOOLS_API_VERSION_MINOR
-#undef AI_TOOLS_API_VERSION_MICRO
 #undef AI_TOOLS_DATE_TIME
 #undef AI_TOOLS_COMPILE_TIME
 

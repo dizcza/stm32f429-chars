@@ -1,4 +1,5 @@
 Debug/
 .settings/
 *Debug.launch
-*generate_report.txt
+*generate_report*
+.ai/

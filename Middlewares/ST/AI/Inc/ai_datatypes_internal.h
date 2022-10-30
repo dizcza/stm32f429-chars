@@ -18,14 +18,11 @@
   ******************************************************************************
   */
 
-#ifndef __AI_DATATYPES_INTERNAL_H__
-#define __AI_DATATYPES_INTERNAL_H__
+#ifndef AI_DATATYPES_INTERNAL_H
+#define AI_DATATYPES_INTERNAL_H
 #pragma once
 
-#include <string.h>
-#include "ai_platform.h"
-#include "ai_platform_interface.h"
-
+#include "ai_datatypes.h"
 
 /*!
  * @defgroup datatypes_internal Internal Datatypes
@@ -50,32 +47,6 @@
  * elements, channel elements and `channel_in` elements.
  * @{
  */
-
-/** Count Variable Number of Arguments (up to 64 elements) ********************/
-#define AI_NUMARGS(...) \
-         PP_NARG_(__VA_ARGS__,PP_RSEQ_N())
-#define PP_NARG_(...) \
-         PP_ARG_N(__VA_ARGS__)
-#define PP_ARG_N( \
-          _1, _2, _3, _4, _5, _6, _7, _8, _9,_10, \
-         _11,_12,_13,_14,_15,_16,_17,_18,_19,_20, \
-         _21,_22,_23,_24,_25,_26,_27,_28,_29,_30, \
-         _31,_32,_33,_34,_35,_36,_37,_38,_39,_40, \
-         _41,_42,_43,_44,_45,_46,_47,_48,_49,_50, \
-         _51,_52,_53,_54,_55,_56,_57,_58,_59,_60, \
-         _61,_62,_63,N,...) N
-#define PP_RSEQ_N() \
-         63,62,61,60,                  \
-         59,58,57,56,55,54,53,52,51,50, \
-         49,48,47,46,45,44,43,42,41,40, \
-         39,38,37,36,35,34,33,32,31,30, \
-         29,28,27,26,25,24,23,22,21,20, \
-         19,18,17,16,15,14,13,12,11,10, \
-         9,8,7,6,5,4,3,2,1,0
-
-#define AI_PTR_ALIGN(ptr, alignment) \
-  ( (((ai_uptr)(ptr))+((ai_uptr)(alignment)-1))&(~((ai_uptr)(alignment)-1)) )
-
 
 /*!  AI_STORAGE_KLASS SECTION              ************************************/
 #define AI_STORAGE_KLASS_TYPE(s_) \
@@ -160,29 +131,29 @@
 
 /*!  AI_TENSORS SECTION                     ***********************************/
 #define AI_TENSOR_KLASS(tensor_) \
-  ( (tensor_) ? (tensor_)->klass : NULL ) 
+  ((tensor_) ? (tensor_)->klass : NULL) 
 
 #define AI_TENSOR_SHAPE(tensor_) \
-  ( &((tensor_)->shape) ) 
+  (&((tensor_)->shape)) 
 
 #define AI_TENSOR_STRIDE(tensor_) \
-  ( &((tensor_)->stride) )
+  (&((tensor_)->stride))
 
 #define AI_TENSOR_INFO(tensor_) \
-  ( &((tensor_)->info) )
+  (&((tensor_)->info))
 
-#define AI_TENSOR_DATA(tensor_) \
-  ( (tensor_) ? (tensor_)->data : NULL )
+#define AI_TENSOR_ARRAY(tensor_) \
+  ((tensor_) ? (tensor_)->data : NULL)
 
 #define AI_TENSOR_ID(tensor_) \
-  ( (tensor_) ? AI_TENSOR_INFO(tensor_)->id : 0 )
+  ((tensor_) ? AI_TENSOR_INFO(tensor_)->id : 0)
 
 #define AI_TENSOR_FLAGS(tensor_) \
-  ( (tensor_) ? AI_TENSOR_INFO(tensor_)->flags : 0 )
+  ((tensor_) ? AI_TENSOR_INFO(tensor_)->flags : 0)
 
 
 #define AI_TENSOR_DATA_SIZE(tensor_) \
-  ( (tensor_) ? AI_TENSOR_INFO(tensor_)->data_size : 0 )
+  ((tensor_) ? AI_TENSOR_INFO(tensor_)->data_size : 0)
   
 /*!  AI_OFFSETS SECTION                     ***********************************/
 //#define AI_OFFSET_BATCH(b, stride)  ((ai_ptr_offset)(b)  * AI_STRIDE_BATCH(stride))
@@ -210,6 +181,25 @@
   ( AI_SHAPE_H(AI_TENSOR_SHAPE(tensor_)) * AI_STRIDE_H(AI_TENSOR_STRIDE(tensor_)) )
 
 /******************************************************************************/
+#define AI_PLATFORM_VERSION_INIT(major_, minor_, micro_) \
+  { .major = (major_), .minor = (minor_), .micro = (micro_), .reserved = 0x0 }
+
+
+AI_DECLARE_STATIC
+ai_version ai_version_get(
+  const ai_u8 major, const ai_u8 minor, const ai_u8 micro)
+{
+  return (((ai_version)major)<<24) | (((ai_version)minor)<<16) | (((ai_version)micro)<<8);
+}
+
+AI_DECLARE_STATIC
+ai_platform_version ai_platform_version_get(
+  const ai_version version)
+{
+  const ai_platform_version pv = AI_PLATFORM_VERSION_INIT(
+    (ai_u8)(version>>24), (ai_u8)(version>>16), (ai_u8)(version>>8));
+  return pv;
+}
 
 /** Integer tensor info extraction ********************************************/
 #define AI_INTQ_INFO_LIST_SCALE_ARRAY(list_, type_) \
@@ -225,45 +215,6 @@
     
     
 AI_API_DECLARE_BEGIN
-
-/*!
- * @typedef ai_offset
- * @ingroup ai_datatypes_internal
- * @brief Generic index offset type
- */
-typedef int32_t ai_offset;
-
-
-/*!
- * @typedef ai_vec4_float
- * @ingroup ai_datatypes_internal
- * @brief 32bit X 4 float (optimization for embedded MCU)
- */
-typedef struct _ai_vec4_float {
-    ai_float a1;
-    ai_float a2;
-    ai_float a3;
-    ai_float a4;
-} ai_vec4_float;
-
-
-#define AI_VEC4_FLOAT(ptr_) \
-  _get_vec4_float((ai_handle)(ptr_))
-
-AI_DECLARE_STATIC
-ai_vec4_float _get_vec4_float(const ai_handle fptr)
-{
-    return *((const ai_vec4_float*)fptr);
-}
-
-/*!
- * @typedef (*func_copy_tensor)
- * @ingroup datatypes_internal
- * @brief Fuction pointer for generic tensor copy routines
- * this function pointer abstracts a generic tensor copy routine.
- */
-typedef ai_bool (*func_copy_tensor)(ai_tensor* dst, const ai_tensor* src);
-
 
 /*!
  * @brief Check whether 2 shapes have identical dimensions.
@@ -376,4 +327,4 @@ ai_buffer ai_from_array_to_buffer(const ai_array* array)
 
 AI_API_DECLARE_END
 
-#endif /*__AI_DATATYPES_INTERNAL_H__*/
+#endif /*AI_DATATYPES_INTERNAL_H*/

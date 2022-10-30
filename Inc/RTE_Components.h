@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * COPYRIGHT(c) 2020 STMicroelectronics
+  * COPYRIGHT(c) 2022 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@
 #define  __RTE_COMPONENTS_H__
 
 /* Defines ------------------------------------------------------------------*/
-/* STMicroelectronics.X-CUBE-AI.5.1.2 */
+/* STMicroelectronics.X-CUBE-AI.6.0.0 */
 #define AI_ApplicationTemplate
 
 #endif /* __RTE_COMPONENTS_H__ */

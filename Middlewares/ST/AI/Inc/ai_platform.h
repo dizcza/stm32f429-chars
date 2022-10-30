@@ -26,9 +26,39 @@
 #include <stddef.h>
 #include <inttypes.h>
 
-#define AI_PLATFORM_API_MAJOR           1
-#define AI_PLATFORM_API_MINOR           1
-#define AI_PLATFORM_API_MICRO           0
+#ifndef AI_PLATFORM_API_MAJOR
+#define AI_PLATFORM_API_MAJOR           (1)
+#endif
+#ifndef AI_PLATFORM_API_MINOR
+#define AI_PLATFORM_API_MINOR           (1)
+#endif
+#ifndef AI_PLATFORM_API_MICRO
+#define AI_PLATFORM_API_MICRO           (0)
+#endif
+
+#define AI_PLATFORM_API_VERSION \
+  AI_VERSION(AI_PLATFORM_API_MAJOR, \
+             AI_PLATFORM_API_MINOR, \
+             AI_PLATFORM_API_MICRO)
+
+
+#ifndef AI_TOOLS_API_VERSION_MAJOR
+#define AI_TOOLS_API_VERSION_MAJOR      (1)
+#endif
+#ifndef AI_TOOLS_API_VERSION_MINOR
+#define AI_TOOLS_API_VERSION_MINOR      (4)
+#endif
+#ifndef AI_TOOLS_API_VERSION_MICRO
+#define AI_TOOLS_API_VERSION_MICRO      (0)
+#endif
+
+#define AI_TOOLS_API_VERSION \
+  AI_VERSION(AI_TOOLS_API_VERSION_MAJOR, \
+             AI_TOOLS_API_VERSION_MINOR, \
+             AI_TOOLS_API_VERSION_MICRO)
+
+#define AI_TOOLS_API_VERSION_1_3 \
+  AI_VERSION(1, 3, 0)
 
 /******************************************************************************/
 #ifdef __cplusplus
@@ -37,7 +67,7 @@
 #else
 #include <stdbool.h>
 #define AI_API_DECLARE_BEGIN    /* AI_API_DECLARE_BEGIN */
-#define AI_API_DECLARE_END      /* AI_API_DECLARE_END */
+#define AI_API_DECLARE_END      /* AI_API_DECLARE_END   */
 #endif
 
 /******************************************************************************/
@@ -55,6 +85,8 @@
   #define AI_ALIGNED_2          _Pragma("data_alignment = 2")
   #define AI_ALIGNED_4          _Pragma("data_alignment = 4")
   #define AI_ALIGNED_8          _Pragma("data_alignment = 8")
+  #define AI_ALIGNED_16         _Pragma("data_alignment = 16")
+  #define AI_ALIGNED_32         _Pragma("data_alignment = 32")
 #elif defined(__CC_ARM)
   #define AI_API_ENTRY          __attribute__((visibility("default")))
   #define AI_ALIGNED(x)         __attribute__((aligned (x)))
@@ -105,22 +137,25 @@
 #define INTQ_CONST    const
 // #define INTQ_CONST
 
+#define AI_INTQ_INFO_LIST(list_) \
+  ((list_)->info)
+
 #define AI_INTQ_INFO_LIST_FLAGS(list_) \
-  ( (list_) ? (list_)->flags : 0 )
+  ((list_) ? (list_)->flags : 0)
 
 #define AI_INTQ_INFO_LIST_SIZE(list_) \
-  ( (list_) ? (list_)->size : 0 )
+  ((list_) ? (list_)->size : 0)
 
 #define AI_HAS_INTQ_INFO_LIST(list_) \
-  ( (list_) ? (((list_)->info) && ((list_)->size>0)) : false )
+  ((list_) ? (((list_)->info) && ((list_)->size>0)) : false)
 
 #define AI_INTQ_INFO_LIST_SCALE(list_, type_, pos_) \
-  ( ((list_) && (list_)->info && ((pos_)<(list_)->size)) \
-    ? ((type_*)((list_)->info->scale))[(pos_)] : 0 )
+  (((list_) && (list_)->info && ((pos_)<(list_)->size)) \
+   ? ((type_*)((list_)->info->scale))[(pos_)] : 0)
 
 #define AI_INTQ_INFO_LIST_ZEROPOINT(list_, type_, pos_) \
-  ( ((list_) && (list_)->info && ((pos_)<(list_)->size)) \
-    ? ((type_*)((list_)->info->zeropoint))[(pos_)] : 0 )
+  (((list_) && (list_)->info && ((pos_)<(list_)->size)) \
+   ? ((type_*)((list_)->info->zeropoint))[(pos_)] : 0)
 
 /*! ai_buffer format handlers *************************************************/
 
@@ -142,6 +177,7 @@ typedef int32_t ai_buffer_format;
 #define AI_BUFFER_FMT_TYPE_NONE          (0x0)
 #define AI_BUFFER_FMT_TYPE_FLOAT         (0x1)
 #define AI_BUFFER_FMT_TYPE_Q             (0x2)
+#define AI_BUFFER_FMT_TYPE_BOOL          (0x3)
 
 #define AI_BUFFER_FMT_FLAG_CONST         (0x1U<<30)
 #define AI_BUFFER_FMT_FLAG_STATIC        (0x1U<<29)
@@ -280,6 +316,8 @@ enum {
   AI_BUFFER_FORMAT_UQ       = AI_BUFFER_FMT_SET(AI_BUFFER_FMT_TYPE_Q, 0, 0,  0, 0),
   AI_BUFFER_FORMAT_UQ7      = AI_BUFFER_FMT_SET(AI_BUFFER_FMT_TYPE_Q, 0, 0,  8, 7),
   AI_BUFFER_FORMAT_UQ15     = AI_BUFFER_FMT_SET(AI_BUFFER_FMT_TYPE_Q, 0, 0, 16, 15),
+
+  AI_BUFFER_FORMAT_BOOL     = AI_BUFFER_FMT_SET(AI_BUFFER_FMT_TYPE_BOOL, 0, 0, 8, 0),
 };
 
 /******************************************************************************/
@@ -291,6 +329,10 @@ enum {
 #define SSIZET_FMT  "%" PRIu32
 #define AII32_FMT   "%" PRId32
 #define AIU32_FMT   "%" PRIu32
+
+#define AI_VERSION(major_, minor_, micro_) \
+  (((major_)<<24) | ((minor_)<<16) | ((micro_)<<8))
+
 
 typedef uint8_t ai_custom_type_signature;
 
@@ -319,7 +361,7 @@ typedef int16_t ai_i16;
 typedef int32_t ai_i32;
 typedef int64_t ai_i64;
 
-typedef uint32_t    ai_signature;
+typedef uint32_t ai_signature;
 
 /******************************************************************************/
 /*!
@@ -396,18 +438,19 @@ typedef struct ai_buffer_ {
  * Generic enum to list network error types.
  */
 typedef enum {
-  AI_ERROR_NONE                   = 0x00,     /*!< No error */
-  AI_ERROR_TOOL_PLATFORM_MISMATCH = 0x01,
-  AI_ERROR_TYPES_MISMATCH         = 0x02,
-  AI_ERROR_INVALID_HANDLE         = 0x10,
-  AI_ERROR_INVALID_STATE          = 0x11,
-  AI_ERROR_INVALID_INPUT          = 0x12,
-  AI_ERROR_INVALID_OUTPUT         = 0x13,
-  AI_ERROR_INVALID_PARAM          = 0x14,
-  AI_ERROR_INVALID_SIGNATURE      = 0x15,
-  AI_ERROR_INIT_FAILED            = 0x30,
-  AI_ERROR_ALLOCATION_FAILED      = 0x31,
-  AI_ERROR_DEALLOCATION_FAILED    = 0x32,
+  AI_ERROR_NONE                         = 0x00,     /*!< No error */
+  AI_ERROR_TOOL_PLATFORM_API_MISMATCH   = 0x01,
+  AI_ERROR_TYPES_MISMATCH               = 0x02,
+  AI_ERROR_INVALID_HANDLE               = 0x10,
+  AI_ERROR_INVALID_STATE                = 0x11,
+  AI_ERROR_INVALID_INPUT                = 0x12,
+  AI_ERROR_INVALID_OUTPUT               = 0x13,
+  AI_ERROR_INVALID_PARAM                = 0x14,
+  AI_ERROR_INVALID_SIGNATURE            = 0x15,
+  AI_ERROR_INIT_FAILED                  = 0x30,
+  AI_ERROR_ALLOCATION_FAILED            = 0x31,
+  AI_ERROR_DEALLOCATION_FAILED          = 0x32,
+  AI_ERROR_CREATE_FAILED                = 0x33,
 } ai_error_type;
 
 /*!
@@ -445,7 +488,6 @@ typedef struct ai_platform_version_ {
   ai_u8               micro;
   ai_u8               reserved;
 } ai_platform_version;
-
 
 /*!
  * @struct ai_network_params

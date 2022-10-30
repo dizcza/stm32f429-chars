@@ -24,6 +24,16 @@
 
 #include "layers_common.h"
 
+typedef enum {
+    KTfLiteNone = 0,
+    KTfLiteActRelu,
+    KTfLiteActRelu1,
+    KTfLiteActRelu6,
+    KTfLiteActTanh,
+    KTfLiteActSignBit,
+    KTfLiteActSigmoid
+} ai_tflitefused_activation;
+
 /*!
  * @defgroup layers_generic Generic Layers Definitions
  * @brief definition 
@@ -72,6 +82,13 @@ typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_topK_{
   ai_i32   k;
 } ai_layer_topK;
 
+typedef AI_ALIGNED_TYPE(struct,4)ai_layer_svdf_{
+    AI_LAYER_COMMON_FIELDS_DECLARE
+    ai_size rank;
+    ai_tflitefused_activation activation;
+
+}ai_layer_svdf;
+
 
 /*!
  * @struct ai_layer_slice
@@ -117,6 +134,21 @@ typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_tile_{
   AI_CONST ai_array* repeats;  /*!< numbers of repeated copies along each dimension */
 } ai_layer_tile;
 
+
+/*!
+ * @struct ai_layer_shape
+ * @ingroup layers generic
+ * @brief Shape layer definition
+ *
+ * This layer defines the param of a shape layer. It returns the shape of the
+ * input tensor. It is intended to be used by its associated forward function
+ * @ref forward_shape
+ */
+typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_shape_{
+  AI_LAYER_COMMON_FIELDS_DECLARE
+} ai_layer_shape;
+
+
 /*!
  * @struct ai_layer_upsample
  * @ingroup layers generic
@@ -128,9 +160,10 @@ typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_tile_{
  */
 typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_upsample_{
   AI_LAYER_COMMON_FIELDS_DECLARE
-  ai_upsample_mode    mode;   /*!< upsample mode */
-  ai_bool             center; /*!< center pixels */
-  AI_CONST ai_array*  scales; /*!< scale array along each dimension */
+  ai_upsample_mode    mode;          /*!< upsample mode */
+  ai_bool             center;        /*!< center pixels */
+  AI_CONST ai_array*  scales;        /*!< scale array along each dimension */
+  ai_nearest_mode     nearest_mode;  /*!< used in nearest mode */
 } ai_layer_upsample;
 
 /*!
@@ -209,8 +242,8 @@ typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_add_ {
   ai_tensor*         out_tensor;  /*!< output tensor (if NULL==no copy) */
   func_copy_tensor   copy_to_out_tensor; /*!< pointer to copy tensor func
                                          (NULL = no copy) */ 
-  ai_layer*  split_layer; /*!< pointer to associated split layer */
-  ai_layer*  next_layer;  /*!< pointer to next layer to process */
+  ai_layer_base*     split_layer; /*!< pointer to associated split layer */
+  ai_layer_base*     next_layer;  /*!< pointer to next layer to process */
 } ai_layer_add;
 
 typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_ArgMax_{
@@ -233,6 +266,17 @@ typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_transpose_ {
                                    permutation of the input tensor shape */
 } ai_layer_transpose;
 
+/*!
+ * @struct ai_layer_transpose_batch
+ * @ingroup layers_generic
+ * @brief Transpose batch layer datastruct declaration. This defines the params of a
+ * transpose layer. It is intended to be used by his associated forward function
+ * @ref forward_transpose_batch
+ */
+typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_transpose_batch_ {
+  AI_LAYER_COMMON_FIELDS_DECLARE
+} ai_layer_transpose_batch;
+
 
 #define AI_TIME_DISTRIBUTED_AXIS    (AI_SHAPE_HEIGHT)
 
@@ -245,7 +289,7 @@ typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_transpose_ {
  */
 typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_time_distributed_ {
   AI_LAYER_COMMON_FIELDS_DECLARE
-  ai_layer*  inner_layer;       /*!< inner layer to process */
+  ai_layer_base*  inner_layer;       /*!< inner layer to process */
 } ai_layer_time_distributed;
 
 /*!
@@ -261,7 +305,37 @@ typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_concat_ {
   ai_shape_dimension axis;       /*!< which axis to concatenate on */
 } ai_layer_concat;
 
-typedef ai_float (*func_binary)(const ai_float a, const ai_float b);
+/*!
+ * @struct ai_layer_pack
+ * @ingroup layers_generic
+ * @brief pack layer
+ *
+ * Pack Layer.
+ * It is a sequential layer. see @ref ai_layer_sequential
+ */
+typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_pack_ {
+  AI_LAYER_COMMON_FIELDS_DECLARE
+  ai_shape_dimension axis;       /*!< which axis to concatenate on */
+} ai_layer_pack;
+
+/*!
+ * @struct ai_layer_unpack
+ * @ingroup layers_generic
+ * @brief unpack layer
+ *
+ * Unpack Layer.
+ * It is a sequential layer. see @ref ai_layer_sequential
+ */
+typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_unpack_ {
+  AI_LAYER_COMMON_FIELDS_DECLARE
+  ai_shape_dimension axis;       /*!< which axis to concatenate on */
+} ai_layer_unpack;
+
+typedef void (*func_binary)(ai_handle out,const ai_handle a, const ai_handle b);
+typedef void (*func_buffer_binary)(ai_handle out,const ai_handle a, const ai_handle b, const ai_size loop);
+typedef void (*func_buffer_binary_integer)(ai_handle out,const ai_handle a, const ai_handle b, const ai_size loop,
+                                        const ai_handle scale1, const ai_handle zp1, const ai_handle scale2, const ai_handle zp2, 
+                                        const ai_handle scaleout, const ai_handle zpout);
 
 /*!
  * @struct ai_layer_eltwise
@@ -274,7 +348,22 @@ typedef ai_float (*func_binary)(const ai_float a, const ai_float b);
 typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_eltwise_ {
   AI_LAYER_COMMON_FIELDS_DECLARE
   func_binary operation;       /*!< operation to apply elementwise */
+  func_buffer_binary buffer_operation; /*!< operation to apply elementwise */
 } ai_layer_eltwise;
+
+/*!
+ * @struct ai_layer_eltwise_integer
+ * @ingroup layers_generic
+ * @brief General element-wise transformation layer for integer data
+ *
+ * Elementwise Layer.
+ * It is a sequential layer. see @ref ai_layer_sequential
+ */
+typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_eltwise_integer_ {
+  AI_LAYER_COMMON_FIELDS_DECLARE
+  func_binary operation;       /*!< operation to apply elementwise */
+  func_buffer_binary_integer buffer_operation; /*!< operation to apply elementwise */
+} ai_layer_eltwise_integer;
 
 /*!
  * @struct ai_layer_reduce
@@ -286,7 +375,7 @@ typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_eltwise_ {
  */
 typedef AI_ALIGNED_TYPE(struct, 4) ai_layer_reduce_ {
   AI_LAYER_COMMON_FIELDS_DECLARE
-  ai_float neutral_value;   /*!< Initialization value for operation */
+  const ai_array* neutral_value;   /*!< Initialization value for operation */
   func_binary operation;    /*!< operation to apply elementwise */
 } ai_layer_reduce;
 
@@ -319,6 +408,9 @@ void forward_split(ai_layer* layer);
 AI_INTERNAL_API
 void forward_add(ai_layer* layer);
 
+AI_INTERNAL_API
+void forward_svdf(ai_layer* layer);
+
 /*!
  * @brief Transpose a tensor along a pivot and save transposed values into an output
  * tensor
@@ -329,6 +421,15 @@ AI_INTERNAL_API
 void forward_transpose(ai_layer* layer);
 
 /*!
+ * @brief Transpose batch and save transposed values of a determinate batch into an output
+ * tensor
+ * @ingroup layers_generic
+ * @param layer the transpose batch layer
+ */
+AI_INTERNAL_API
+void forward_transpose_batch(ai_layer* layer);
+
+/*!
  * @brief TimeDistrubuted forward layer function. This forward function
  * implements the timedistributed layer. 
  * @ingroup layers_generic
@@ -337,6 +438,21 @@ void forward_transpose(ai_layer* layer);
 AI_INTERNAL_API
 void forward_time_distributed(ai_layer* layer);
 
+/*!
+ * @brief Packing a list of tensors in a single tensor
+ * @ingroup layers generic
+ * @param layer the packing layer
+ */
+AI_INTERNAL_API
+void forward_pack(ai_layer* layer);
+
+/*!
+ * @brief Unpacking a single of tensors in a list tensor
+ * @ingroup layers generic
+ * @param layer the unpacking layer
+ */
+AI_INTERNAL_API
+void forward_unpack(ai_layer* layer);
 
 /*!
  * @brief Concatenates a list of tensors into a single tensor.
@@ -369,6 +485,14 @@ void forward_slice(ai_layer* layer);
  */
 AI_INTERNAL_API
 void forward_tile(ai_layer* layer);
+
+/*!
+ * @brief Returns the shape of an input tensors
+ * @ingroup layers_generic
+ * @param layer the Shape layer
+ */
+AI_INTERNAL_API
+void forward_shape(ai_layer* layer);
 
 /*!
  * @brief TopK an input tensors
@@ -425,6 +549,30 @@ void forward_instanceNormalization(ai_layer* layer);
  */
 AI_INTERNAL_API
 void forward_eltwise(ai_layer* layer);
+
+/*!
+ * @brief Apply an elementwise transformation to the integer input tensors
+ * @ingroup layers_generic
+ * @param layer the elementwise layer
+ */
+AI_INTERNAL_API
+void forward_eltwise_integer(ai_layer* layer);
+
+/*!
+ * @brief Apply an elementwise transformation to the signed integer input tensors
+ * @ingroup layers_generic
+ * @param layer the elementwise layer
+ */
+AI_INTERNAL_API
+void forward_eltwise_integer_INT8(ai_layer* layer);
+
+/*!
+ * @brief Apply an elementwise transformation to the unsigned integer input tensors
+ * @ingroup layers_generic
+ * @param layer the elementwise layer
+ */
+AI_INTERNAL_API
+void forward_eltwise_integer_UINT8(ai_layer* layer);
 
 /*!
  * @brief Apply a reduce transformation to the input tensors

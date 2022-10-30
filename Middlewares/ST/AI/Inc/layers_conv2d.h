@@ -17,8 +17,8 @@
   *
   ******************************************************************************
   */
-#ifndef __LAYERS_CONV2D_H_
-#define __LAYERS_CONV2D_H_
+#ifndef LAYERS_CONV2D_H
+#define LAYERS_CONV2D_H
 #pragma once
 
 #include "layers_nl.h"
@@ -46,7 +46,7 @@ AI_API_DECLARE_BEGIN
  * @ingroup layers_conv2d
  * @brief Dense (fully connected) layer
  */
-typedef ai_layer ai_layer_dense;
+typedef ai_layer_base ai_layer_dense;
 
 /*!
  * @struct ai_layer_gemm
@@ -367,4 +367,4 @@ void forward_dense_integer_UAUA_ch(ai_layer *pLayer);
 
 AI_API_DECLARE_END
 
-#endif    /*__LAYERS_CONV2D_H_*/
+#endif    /*LAYERS_CONV2D_H*/

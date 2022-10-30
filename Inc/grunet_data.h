@@ -2,12 +2,12 @@
   ******************************************************************************
   * @file    grunet_data.h
   * @author  AST Embedded Analytics Research Platform
-  * @date    Tue Aug  4 00:28:52 2020
+  * @date    Sun Oct 30 22:26:01 2022
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2018 STMicroelectronics.
+  * Copyright (c) 2022 STMicroelectronics.
   * All rights reserved.
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -18,10 +18,11 @@
   ******************************************************************************
   */
 
-#ifndef __GRUNET_DATA_H_
-#define __GRUNET_DATA_H_
+#ifndef GRUNET_DATA_H
+#define GRUNET_DATA_H
 #pragma once
 
+#include "grunet_config.h"
 #include "ai_platform.h"
 
 #define AI_GRUNET_DATA_CONFIG           AI_HANDLE_NULL
@@ -56,5 +57,5 @@ ai_handle ai_grunet_data_weights_get(void);
 
 AI_API_DECLARE_END
 
-#endif /* __GRUNET_DATA_H_ */
+#endif /* GRUNET_DATA_H */
 
