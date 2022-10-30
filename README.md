@@ -2,6 +2,11 @@
 
 This project demonstrates Neural Networks inference in MCUs with constrained resources (memory and CPU frequency).
 
+### Binaries
+
+See [Releases](https://github.com/dizcza/stm32f429-chars/releases). To upload an ELF file, use STM32 CubeProgrammer.
+
+
 ### Task
 
 Online handwritten character classification.
@@ -35,13 +40,15 @@ Model training script: [gru.py](https://github.com/dizcza/ujipen/blob/master/gru
 Pretrained model dir: [models](models)
 
 
-### Neural Network MCU Inference Backend
+### X-CUBE-AI
 
 [X-CUBE-AI](https://www.st.com/en/embedded-software/x-cube-ai.html)
 
 Usage: [GRU inference](Modules/Recognition/gru_infer.h)
 
 ![cube-ai](screenshots/grunet_cubeai_modelconf.png)
+
+![graph](screenshots/graph.png)
 
 
 ### Hardware
